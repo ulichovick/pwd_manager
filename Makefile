@@ -13,7 +13,7 @@ DEBUG ?= 0
 ifeq ($(DEBUG),1)
     CXXFLAGS += -g -O0
 else
-    CXXFLAGS += -O2
+    CXXFLAGS += -O2 -DNDEBUG
 endif
 
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
@@ -34,10 +34,6 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp #include/database.h
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) -c $< $(CXXFLAGS) -o $@
 
-# Debug Mode (Compile & Run with GDB)
-debug: DEBUG=1
-debug: all
-	gdb $(TARGET)
 
 # Run the Program
 run: $(TARGET)

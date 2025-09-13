@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <iostream>
 #include "sqlite3.h"
 
@@ -16,7 +17,12 @@ int main()
     //int rc;
     char *zErrMsg = 0;
 
-    sqlite3_open("test.db", &db);
+    auto data_path = std::filesystem::current_path().parent_path() / "data" / "test.db";
+
+    std::cout << "data path: " << data_path  << "\n";
+
+    std::string db_path_str = data_path.string();
+    sqlite3_open(db_path_str.c_str(), &db);
 
     sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);" , callback, 0, &zErrMsg);
     sqlite3_exec(db, "INSERT INTO users (name, age) VALUES ('Alice', 25);", callback, 0, &zErrMsg);
