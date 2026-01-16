@@ -1,7 +1,10 @@
+#include "sqlite3.h"
 #include <filesystem>
 #include <iostream>
-#include "sqlite3.h"
 
+/**
+ * callback that idk wtf it does but it's required 
+ */
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     int i;
     for(i = 0; i<argc; i++) {
@@ -11,21 +14,41 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     return 0;
 }
 
+int getSchemaVersion(sqlite3* db, sqlite3_stmt* stmt)
+{
+    int rc;
+    rc = sqlite3_prepare_v2(db, "PRAGMA user_version;", -1, &stmt, nullptr );
+    rc = sqlite3_step(stmt);
+    int schemaVersion {};
+    if (rc == SQLITE_ROW)
+    {
+        schemaVersion = sqlite3_column_int(stmt, 0);
+    }
+    return schemaVersion;
+}
+
 int main()
 {
-    sqlite3 *db;
-    //int rc;
+    sqlite3* db;
+    sqlite3_stmt* stmt;
+    int rc;
     char *zErrMsg = 0;
 
-    auto data_path = std::filesystem::current_path().parent_path() / "data" / "test.db";
+    rc = sqlite3_open("test.db", &db);
+    if (rc)
+    {
+        std::cerr << "cannot open the database:"<< sqlite3_errmsg(db) <<"  \n";
+    }
 
-    std::cout << "data path: " << data_path  << "\n";
+    sqlite3_exec(db, "PRAGMA foreign_keys=ON;", callback, 0, &zErrMsg);
+    sqlite3_exec(db, "PRAGMA user_version=1;", callback, 0, &zErrMsg);
 
-    std::string db_path_str = data_path.string();
-    sqlite3_open(db_path_str.c_str(), &db);
 
-    sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);" , callback, 0, &zErrMsg);
-    sqlite3_exec(db, "INSERT INTO users (name, age) VALUES ('Alice', 25);", callback, 0, &zErrMsg);
+    int version {getSchemaVersion(db, stmt)};
+    std::cout << "Schema version: " << version << "\n";
+    
+    //sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);" , callback, 0, &zErrMsg);
+    //sqlite3_exec(db, "INSERT INTO users (name, age) VALUES ('Alice', 25);", callback, 0, &zErrMsg);
     sqlite3_exec(db, "SELECT * FROM users;", callback, 0, &zErrMsg);
     sqlite3_free(zErrMsg);
     sqlite3_close(db);

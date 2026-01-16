@@ -2,3 +2,10 @@
 bin/
 build/
 test.db
+out/
+.cache
+.idea
+.vs
+.vscode
+CMakePresets.json
+gpt_general.odt
