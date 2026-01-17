@@ -14,6 +14,7 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     return 0;
 }
 
+//mandar esta mierda a una clase de bases de datos con metodos get schema, set schema
 int getSchemaVersion(sqlite3* db, sqlite3_stmt* stmt)
 {
     int rc;
