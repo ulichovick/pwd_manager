@@ -1,4 +1,5 @@
 #include "sqlite3.h"
+#include "database.h"
 #include <filesystem>
 #include <iostream>
 
@@ -30,28 +31,44 @@ int getSchemaVersion(sqlite3* db, sqlite3_stmt* stmt)
 
 int main()
 {
-    sqlite3* db;
-    sqlite3_stmt* stmt;
     int rc;
     char *zErrMsg = 0;
 
-    rc = sqlite3_open("test.db", &db);
-    if (rc)
+    /*
+    rc = sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, NULL);
+    if (rc != SQLITE_OK)
     {
-        std::cerr << "cannot open the database:"<< sqlite3_errmsg(db) <<"  \n";
+        std::cerr << sqlite3_errmsg(db) << " la base de datos no existe! Creando la base de datos, " << "\n";
+        //crear base de datos
+        rc = sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+        if (rc == SQLITE_OK)
+        {
+            std::cout << " base de datos creada " << rc << "\n";
+        }
+        
+
     }
+    else
+    {
+        std::cout << "Opened database successfully" << "\n";
+
+    }
+    
 
     sqlite3_exec(db, "PRAGMA foreign_keys=ON;", callback, 0, &zErrMsg);
     sqlite3_exec(db, "PRAGMA user_version=1;", callback, 0, &zErrMsg);
+    */
+
+    SqlitoSeguro::Database db1;
 
 
-    int version {getSchemaVersion(db, stmt)};
-    std::cout << "Schema version: " << version << "\n";
+    //int version {getSchemaVersion(db, stmt)};
+    //std::cout << "Schema version: " << version << "\n";
     
     //sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);" , callback, 0, &zErrMsg);
     //sqlite3_exec(db, "INSERT INTO users (name, age) VALUES ('Alice', 25);", callback, 0, &zErrMsg);
-    sqlite3_exec(db, "SELECT * FROM users;", callback, 0, &zErrMsg);
+    //sqlite3_exec(db, "SELECT * FROM users;", callback, 0, &zErrMsg);
     sqlite3_free(zErrMsg);
-    sqlite3_close(db);
+    //sqlite3_close(db);
     return 0;
 }
