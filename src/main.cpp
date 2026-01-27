@@ -7,9 +7,6 @@
 
 int main()
 {
-    int rc;
-    char *zErrMsg = 0;
-
     /*
     sqlite3_exec(db, "PRAGMA foreign_keys=ON;", callback, 0, &zErrMsg);
     sqlite3_exec(db, "PRAGMA user_version=1;", callback, 0, &zErrMsg);
