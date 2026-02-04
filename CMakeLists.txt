@@ -12,7 +12,7 @@ add_subdirectory(third_party/sqlite)
 add_executable("pwd_manager" ${SOURCES})
 target_link_libraries("pwd_manager" PRIVATE sqlite3)
 target_include_directories("pwd_manager" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
-target_compile_features("pwd_manager" PRIVATE cxx_std_17)
+target_compile_features("pwd_manager" PRIVATE cxx_std_23)
 
 #[===[
 add_custom_command(

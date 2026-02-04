@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Ithird_party/sqlite -std=c++17 -Wall
+CXXFLAGS = -Ithird_party/sqlite -std=c++23 -Wall
 LDFLAGS = third_party/sqlite/sqlite3.o  # Link to compiled object
 
 SRC_DIR = src

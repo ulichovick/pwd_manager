@@ -1,5 +1,7 @@
 #include "sqlite3.h"
 #include "database.h"
+#include <chrono>
+#include <format>
 #include <iostream>
 
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
@@ -12,7 +14,7 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
 }
 
 /* database class definitinition | declaration */
-SqlitoSeguro::Database::Database(const std::filesystem::path& path)
+SqlitoSeguro::Database::Database(const std::filesystem::path& path) : m_path(path)
 {
     std::filesystem::create_directories(path.parent_path());
     std::string dbPath {path.string()};
@@ -45,13 +47,12 @@ void SqlitoSeguro::Database::initialize()
     {
         this->createSchema();
         int newVer {this->setSchemaVersion(1)};
+        this->backupDatabase();
     }
     else
     {
         std::cout << "Database Exists!" << "\n";
     }
-    
-    
 }
 
 void SqlitoSeguro::Database::createSchema()
@@ -108,19 +109,45 @@ int SqlitoSeguro::Database::getSchemaVersion()
 int SqlitoSeguro::Database::setSchemaVersion(int current_ver)
 {
     int rc;
-    /* int ver {SqlitoSeguro::Database::getSchemaVersion()};
-    ver++; */
     std::string sql = "PRAGMA user_version="+ std::to_string(current_ver);
 
     rc = sqlite3_exec(db, sql.c_str(), callback, 0, &zErrMsg);
 
     if (rc != SQLITE_OK) {
-        std::cerr << "Failed to set user_version PRAGMA: " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "Failed to set user_version PRAGMA: " << sqlite3_errmsg(db) << "\n";
     } else {
-        std::cout << "Database version successfully set to " << std::to_string(current_ver) << std::endl;
+        std::cout << "Database version successfully set to " << std::to_string(current_ver) << "\n";
     }
-    sqlite3_finalize(stmt);
+    /* sqlite3_finalize(stmt); */
     current_ver = SqlitoSeguro::Database::getSchemaVersion();
     return current_ver;
+}
+
+void SqlitoSeguro::Database::backupDatabase()
+{
+    sqlite3* backupDB = nullptr;
+    std::string nstrPath = m_path.parent_path().string();
+
+    const auto time = std::chrono::system_clock::now();
+    nstrPath = nstrPath + "/backup_" + std::format("{:%Y-%m-%d}", time) +".db";
+    std::cout << nstrPath << "\n";
+    int rc = sqlite3_open_v2(nstrPath.c_str() , &backupDB, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+    std::cout << rc << "\n";
+    if (rc != SQLITE_OK)
+        throw std::runtime_error("Cannot open backup database");
+    sqlite3_backup* backup = sqlite3_backup_init(
+        backupDB,
+        "main",
+        db,
+        "main"
+    );
+
+    if(!backup)
+    {
+        throw std::runtime_error("backup failed!");
+    }
+    sqlite3_backup_step(backup, -1);
+    sqlite3_backup_finish(backup);
+    sqlite3_close(backupDB);
 }
 

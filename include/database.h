@@ -14,6 +14,7 @@ namespace SqlitoSeguro
             sqlite3_stmt* stmt = nullptr;
             sqlite3* db = nullptr;
             char *zErrMsg = 0;
+            const std::filesystem::path m_path;
 
         public:
             Database(const std::filesystem::path& path);
@@ -22,6 +23,7 @@ namespace SqlitoSeguro
             void createSchema();
             int getSchemaVersion();
             int setSchemaVersion(int current_ver);
+            void backupDatabase();
     };
 }
 
