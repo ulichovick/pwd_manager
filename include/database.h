@@ -16,10 +16,12 @@ namespace SqlitoSeguro
             char *zErrMsg = 0;
 
         public:
-            Database();
+            Database(const std::filesystem::path& path);
             ~Database();
+            void initialize();
+            void createSchema();
             int getSchemaVersion();
-            int setSchemaVersion();
+            int setSchemaVersion(int current_ver);
     };
 }
 

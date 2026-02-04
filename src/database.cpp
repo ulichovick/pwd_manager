@@ -2,21 +2,6 @@
 #include "database.h"
 #include <iostream>
 
-
-std::string definePaths (bool isDbPath)
-{
-    const char* home {std::getenv("HOME")};
-    std::filesystem::path directorio {std::filesystem::path(home) / ".local" / "share" / "pwd_manager"};
-    if (!isDbPath)
-    {
-        std::string directorio_str {directorio.string()};
-        return directorio_str;
-    }
-    std::filesystem::path db_path {directorio / "vault.db"};
-    std::string db_str {db_path.string()};
-    return db_str;
-}
-
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     int i;
     for(i = 0; i<argc; i++) {
@@ -27,70 +12,21 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
 }
 
 /* database class definitinition | declaration */
-SqlitoSeguro::Database::Database()
+SqlitoSeguro::Database::Database(const std::filesystem::path& path)
 {
-    std::string dirPath {definePaths(false)};
-    std::string dbPath {definePaths(true)};
+    std::filesystem::create_directories(path.parent_path());
+    std::string dbPath {path.string()};
 
-    int rc {sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READWRITE, NULL)};
+    /* int rc {sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READWRITE, NULL)}; */
+    int rc = sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+
     if (rc != SQLITE_OK)
     {
-        std::cerr << sqlite3_errmsg(db) << " la base de datos no existe! ... Creando la base de datos. " << "\n";
-        std::filesystem::create_directories(dirPath);
-
-        rc = sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-
-        if (rc == SQLITE_OK)
-        {
-            std::cout << " base de datos creada!" << "\n";
+        std::string err = sqlite3_errmsg(db);
+        sqlite3_close(db);
+        db = nullptr;
+        throw std::runtime_error("SQLite open failed: " + err);
         }
-        else
-        {
-            std::cerr << sqlite3_errmsg(db) << " la base de datos no pudo ser creada " << "\n";
-        }
-        /* crear tablas y actualizar version del schema*/
-
-        const char* userSql = "CREATE TABLE users ("
-        "id INTEGER PRIMARY KEY,"
-        "username TEXT NOT NULL UNIQUE,"
-        "created_at INTEGER NOT NULL"
-        ");" ;
-
-        const char* accountsSql = "CREATE TABLE accounts ("
-        "id INTEGER PRIMARY KEY,"
-        "user_id INTEGER NOT NULL,"
-        "service TEXT NOT NULL,"
-        "login TEXT NOT NULL,"
-        "password TEXT NOT NULL,"
-        "created_at INTEGER NOT NULL,"
-        "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
-        ");";
-
-        int exitCode = sqlite3_exec(db, userSql, NULL, 0, &zErrMsg);
-
-        if (exitCode != SQLITE_OK) {
-            std::cerr << "Error creating table: " << sqlite3_errmsg(db) << "\n";
-        } 
-        else {
-            std::cout << "Table created successfully" << "\n";
-        }
-
-        exitCode = sqlite3_exec(db, accountsSql, NULL, 0, &zErrMsg);
-
-        if (exitCode != SQLITE_OK) {
-            std::cerr << "Error creating table: " << sqlite3_errmsg(db) << "\n";
-        } else {
-            std::cout << "Table created successfully" << "\n";
-        }
-
-        /* int newVer {this->setSchemaVersion()};
-
-        std::cout << "Version actualiada exitosamente: " << newVer << "\n"; */
-        }
-    else
-    {
-        std::cout << "Base de datos abierta exitosamente" << "\n";
-    }
     sqlite3_exec(db, "PRAGMA foreign_keys=ON;", callback, 0, &zErrMsg);
 }
 SqlitoSeguro::Database::~Database()
@@ -103,6 +39,58 @@ SqlitoSeguro::Database::~Database()
     }
 }
 
+void SqlitoSeguro::Database::initialize()
+{
+    if (this->getSchemaVersion() == 0)
+    {
+        this->createSchema();
+        int newVer {this->setSchemaVersion(1)};
+    }
+    else
+    {
+        std::cout << "Database Exists!" << "\n";
+    }
+    
+    
+}
+
+void SqlitoSeguro::Database::createSchema()
+{
+    const char* userSql = "CREATE TABLE users ("
+        "id INTEGER PRIMARY KEY,"
+        "username TEXT NOT NULL UNIQUE,"
+        "created_at INTEGER NOT NULL"
+        ");" ;
+
+    const char* accountsSql = "CREATE TABLE accounts ("
+        "id INTEGER PRIMARY KEY,"
+        "user_id INTEGER NOT NULL,"
+        "service TEXT NOT NULL,"
+        "login TEXT NOT NULL,"
+        "password TEXT NOT NULL,"
+        "created_at INTEGER NOT NULL,"
+        "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+        ");";
+
+    int exitCode = sqlite3_exec(db, userSql, NULL, 0, &zErrMsg);
+
+    if (exitCode != SQLITE_OK) {
+        std::cerr << "Error creating table Users: " << sqlite3_errmsg(db) << "\n";
+    } 
+    else {
+        std::cout << "Table Users created successfully" << "\n";
+    }
+
+    exitCode = sqlite3_exec(db, accountsSql, NULL, 0, &zErrMsg);
+
+    if (exitCode != SQLITE_OK) {
+        std::cerr << "Error creating table Accounts: " << sqlite3_errmsg(db) << "\n";
+    } else {
+        std::cout << "Table Accounts created successfully" << "\n";
+    }
+}
+
+
 int SqlitoSeguro::Database::getSchemaVersion()
 {
     int rc;
@@ -113,27 +101,26 @@ int SqlitoSeguro::Database::getSchemaVersion()
     {
         schemaVersion = sqlite3_column_int(stmt, 0);
     }
-    sqlite3_finalize(stmt);
+    /* sqlite3_finalize(stmt); */
     return schemaVersion;
 }
 
-int SqlitoSeguro::Database::setSchemaVersion()
+int SqlitoSeguro::Database::setSchemaVersion(int current_ver)
 {
     int rc;
-    int ver {SqlitoSeguro::Database::getSchemaVersion()};
-    ver++;
-    std::string sql = "PRAGMA user_version="+ std::to_string(ver);
-    std::cout  << "version: " << ver << "\n";
+    /* int ver {SqlitoSeguro::Database::getSchemaVersion()};
+    ver++; */
+    std::string sql = "PRAGMA user_version="+ std::to_string(current_ver);
 
     rc = sqlite3_exec(db, sql.c_str(), callback, 0, &zErrMsg);
 
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to set user_version PRAGMA: " << sqlite3_errmsg(db) << std::endl;
     } else {
-        std::cout << "Database successfully set to " << std::to_string(ver) << std::endl;
+        std::cout << "Database version successfully set to " << std::to_string(current_ver) << std::endl;
     }
     sqlite3_finalize(stmt);
-    ver = SqlitoSeguro::Database::getSchemaVersion();
-    return ver;
+    current_ver = SqlitoSeguro::Database::getSchemaVersion();
+    return current_ver;
 }
 
