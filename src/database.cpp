@@ -1,6 +1,7 @@
 #include "sqlite3.h"
 #include "database.h"
 #include <chrono>
+#include <filesystem>
 #include <format>
 #include <iostream>
 
@@ -16,11 +17,17 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
 /* database class definitinition | declaration */
 SqlitoSeguro::Database::Database(const std::filesystem::path& path) : m_path(path)
 {
-    std::filesystem::create_directories(path.parent_path());
+    if (std::filesystem::exists(path) && std::filesystem::is_directory(path))
+    {
+        std::filesystem::create_directories(path.parent_path());
+    }
     std::string dbPath {path.string()};
 
     /* int rc {sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READWRITE, NULL)}; */
     int rc = sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+    std::filesystem::permissions(dbPath,
+        std::filesystem::perms::owner_read | std::filesystem::perms::owner_write,
+        std::filesystem::perm_options::replace);
 
     if (rc != SQLITE_OK)
     {
@@ -28,7 +35,7 @@ SqlitoSeguro::Database::Database(const std::filesystem::path& path) : m_path(pat
         sqlite3_close(db);
         db = nullptr;
         throw std::runtime_error("SQLite open failed: " + err);
-        }
+    }
     sqlite3_exec(db, "PRAGMA foreign_keys=ON;", callback, 0, &zErrMsg);
 }
 SqlitoSeguro::Database::~Database()
@@ -149,5 +156,8 @@ void SqlitoSeguro::Database::backupDatabase()
     sqlite3_backup_step(backup, -1);
     sqlite3_backup_finish(backup);
     sqlite3_close(backupDB);
+    std::filesystem::permissions(nstrPath,
+        std::filesystem::perms::owner_read | std::filesystem::perms::owner_write,
+        std::filesystem::perm_options::replace);
 }
 
