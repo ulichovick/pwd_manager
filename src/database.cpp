@@ -17,17 +17,15 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
 /* database class definitinition | declaration */
 SqlitoSeguro::Database::Database(const std::filesystem::path& path) : m_path(path)
 {
-    if (std::filesystem::exists(path) && std::filesystem::is_directory(path))
+    if (!std::filesystem::exists(path))
     {
         std::filesystem::create_directories(path.parent_path());
     }
     std::string dbPath {path.string()};
 
-    /* int rc {sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READWRITE, NULL)}; */
+    bool isNew = !std::filesystem::exists(dbPath);
+
     int rc = sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-    std::filesystem::permissions(dbPath,
-        std::filesystem::perms::owner_read | std::filesystem::perms::owner_write,
-        std::filesystem::perm_options::replace);
 
     if (rc != SQLITE_OK)
     {
@@ -36,8 +34,22 @@ SqlitoSeguro::Database::Database(const std::filesystem::path& path) : m_path(pat
         db = nullptr;
         throw std::runtime_error("SQLite open failed: " + err);
     }
+    std::filesystem::permissions(
+        path.parent_path(),
+        std::filesystem::perms::owner_all,
+        std::filesystem::perm_options::replace);
+
+    if (isNew) {
+    std::filesystem::permissions(
+        dbPath,
+        std::filesystem::perms::owner_read |
+        std::filesystem::perms::owner_write,
+        std::filesystem::perm_options::replace
+    );
+    }
     sqlite3_exec(db, "PRAGMA foreign_keys=ON;", callback, 0, &zErrMsg);
 }
+
 SqlitoSeguro::Database::~Database()
 {
     if (db)
@@ -137,9 +149,7 @@ void SqlitoSeguro::Database::backupDatabase()
 
     const auto time = std::chrono::system_clock::now();
     nstrPath = nstrPath + "/backup_" + std::format("{:%Y-%m-%d}", time) +".db";
-    std::cout << nstrPath << "\n";
     int rc = sqlite3_open_v2(nstrPath.c_str() , &backupDB, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-    std::cout << rc << "\n";
     if (rc != SQLITE_OK)
         throw std::runtime_error("Cannot open backup database");
     sqlite3_backup* backup = sqlite3_backup_init(
