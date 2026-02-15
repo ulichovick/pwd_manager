@@ -79,6 +79,7 @@ void SqlitoSeguro::Database::createSchema()
     const char* userSql = "CREATE TABLE users ("
         "id INTEGER PRIMARY KEY,"
         "username TEXT NOT NULL UNIQUE,"
+        "password TEXT NOT NULL,"
         "created_at INTEGER NOT NULL"
         ");" ;
 
