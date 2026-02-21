@@ -22,6 +22,14 @@ int main()
 
         db1.initialize();
 
+        SqlitoSeguro::userManager usrs(db1);
+        std::string nombre;
+        std::string contrasena;
+        std::cout << "introduzca el nombre de usuario a crear: " << "\n";
+        std::cin >> nombre;
+        std::cout << "introduzca la contraseña del usuario: " << "\n";
+        std::cin >> contrasena;
+        usrs.createUser(nombre, contrasena);
 
     }
     catch(const std::exception& e)

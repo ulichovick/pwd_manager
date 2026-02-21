@@ -15,7 +15,7 @@ namespace SqlitoSeguro
 
         public:
             //constructor
-            userManager(Database& database);
+            userManager(Database& database): db(database){};
 
             void createUser(const std::string& username,
                         const std::string& password);

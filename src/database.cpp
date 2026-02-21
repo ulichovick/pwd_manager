@@ -15,6 +15,7 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
 }
 
 /* database class definitinition | declaration */
+/* mover todos los metodos para construir la bd (getschema, setschema) a otra clase */
 SqlitoSeguro::Database::Database(const std::filesystem::path& path) : m_path(path)
 {
     if (!std::filesystem::exists(path))
@@ -80,7 +81,7 @@ void SqlitoSeguro::Database::createSchema()
         "id INTEGER PRIMARY KEY,"
         "username TEXT NOT NULL UNIQUE,"
         "password TEXT NOT NULL,"
-        "created_at INTEGER NOT NULL"
+        "created_at TEXT NOT NULL"
         ");" ;
 
     const char* accountsSql = "CREATE TABLE accounts ("
@@ -89,7 +90,7 @@ void SqlitoSeguro::Database::createSchema()
         "service TEXT NOT NULL,"
         "login TEXT NOT NULL,"
         "password TEXT NOT NULL,"
-        "created_at INTEGER NOT NULL,"
+        "created_at TEXT NOT NULL,"
         "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
         ");";
 
@@ -126,6 +127,7 @@ int SqlitoSeguro::Database::getSchemaVersion()
     return schemaVersion;
 }
 
+/* convertir el execute en un prepared statement */
 int SqlitoSeguro::Database::setSchemaVersion(int current_ver)
 {
     int rc;
@@ -170,5 +172,14 @@ void SqlitoSeguro::Database::backupDatabase()
     std::filesystem::permissions(nstrPath,
         std::filesystem::perms::owner_read | std::filesystem::perms::owner_write,
         std::filesystem::perm_options::replace);
+}
+
+void SqlitoSeguro::Database::executeQuery(std::string& query, std::unordered_map<int, std::string>& values)
+{
+    for (auto const& [key, value]: values)
+    {
+        std::cout << "clave: " << key << " valor: " << value << "\n";
+    }
+    
 }
 
