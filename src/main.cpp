@@ -1,7 +1,9 @@
-#include "sqlite3.h"
-#include "database.h"
 #include <filesystem>
 #include <iostream>
+#include "sqlite3.h"
+#include "database.h"
+#include "accounts.h"
+#include "users.h"
 
 //mandar esto como funcion miembro de una clase
 
@@ -19,6 +21,8 @@ int main()
         SqlitoSeguro::Database db1(directorio);
 
         db1.initialize();
+
+
     }
     catch(const std::exception& e)
     {

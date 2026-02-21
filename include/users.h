@@ -19,6 +19,8 @@ namespace SqlitoSeguro
 
             void createUser(const std::string& username,
                         const std::string& password);
+            int Authenticate(const std::string& username,
+                        const std::string& password);
     };
 }
 

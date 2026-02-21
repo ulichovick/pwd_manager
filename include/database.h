@@ -24,6 +24,7 @@ namespace SqlitoSeguro
             int getSchemaVersion();
             int setSchemaVersion(int current_ver);
             void backupDatabase();
+            void executeQuery(std::string& query);
     };
 }
 
