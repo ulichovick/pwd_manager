@@ -174,7 +174,7 @@ void SqlitoSeguro::Database::backupDatabase()
         std::filesystem::perm_options::replace);
 }
 
-void SqlitoSeguro::Database::executeQuery(std::string& query, std::unordered_map<int, std::string>& values)
+void SqlitoSeguro::Database::executeQuery(std::string& query, std::map<int, std::string>& values)
 {
     for (auto const& [key, value]: values)
     {

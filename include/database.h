@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <filesystem>
-#include <unordered_map>
+#include <map>
 
 namespace SqlitoSeguro
 {
@@ -25,7 +25,7 @@ namespace SqlitoSeguro
             int getSchemaVersion();
             int setSchemaVersion(int current_ver);
             void backupDatabase();
-            void executeQuery(std::string& query, std::unordered_map<int, std::string>& values);
+            void executeQuery(std::string& query, std::map<int, std::string>& values);
     };
 }
 
