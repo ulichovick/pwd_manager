@@ -25,7 +25,8 @@ namespace SqlitoSeguro
             int getSchemaVersion();
             int setSchemaVersion(int current_ver);
             void backupDatabase();
-            void executeQuery(std::string& query, std::map<int, std::string>& values);
+            void executeDML(std::string& query, std::map<int, std::string>& values);
+            void executeDQL(std::string& query, std::map<int, std::string>& values);
     };
 }
 

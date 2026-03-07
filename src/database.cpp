@@ -174,12 +174,51 @@ void SqlitoSeguro::Database::backupDatabase()
         std::filesystem::perm_options::replace);
 }
 
-void SqlitoSeguro::Database::executeQuery(std::string& query, std::map<int, std::string>& values)
+void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::string>& values)
 {
+    int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK)
+    {
+        std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+    }
     for (auto const& [key, value]: values)
     {
         std::cout << "clave: " << key << " valor: " << value << "\n";
+        sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
     }
+    rc = sqlite3_step(stmt);
     
+    if (rc != SQLITE_DONE)
+    {
+        std::cerr << "ERROR AL EJECUTAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+    }
+    else
+    {
+        std::cout << "consulta ejecutada exitosamente! " << "\n";
+    }
+}
+
+void SqlitoSeguro::Database::executeDQL(std::string& query, std::map<int, std::string>& values)
+{
+    int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK)
+    {
+        std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+    }
+    for (auto const& [key, value]: values)
+    {
+        std::cout << "clave: " << key << " valor: " << value << "\n";
+        sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
+    }
+    rc = sqlite3_step(stmt);
+    
+    if (rc == SQLITE_ROW)
+    {
+        std::cout << "Bienvenido " << sqlite3_column_text(stmt, 0) << "!" << "\n";
+    }
+    else
+    {
+        std::cerr << "ERROR AL EJECUTAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+    }
 }
 

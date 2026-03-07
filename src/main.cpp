@@ -25,11 +25,29 @@ int main()
         SqlitoSeguro::userManager usrs(db1);
         std::string nombre;
         std::string contrasena;
-        std::cout << "introduzca el nombre de usuario a crear: " << "\n";
-        std::cin >> nombre;
-        std::cout << "introduzca la contraseña del usuario: " << "\n";
-        std::cin >> contrasena;
-        usrs.createUser(nombre, contrasena);
+        int elecc;
+        std::cout << "¿Desea crear un usuario o iniciar sesión? (1=crear usuario | 2=iniciar sesión)" << "\n";
+        std::cin >> elecc;
+        if (elecc==1)
+        {
+            std::cout << "introduzca el nombre de usuario a crear: " << "\n";
+            std::cin >> nombre;
+            std::cout << "introduzca la contraseña: " << "\n";
+            std::cin >> contrasena;
+            usrs.createUser(nombre, contrasena);
+        }
+        else if (elecc=2)
+        {
+            std::cout << "introduzca el nombre de usuario: " << "\n";
+            std::cin >> nombre;
+            std::cout << "introduzca la contraseña: " << "\n";
+            std::cin >> contrasena;
+            usrs.Authenticate(nombre, contrasena);
+        }
+        else
+        {
+            std::cout << "selección no valida!, terminando el programa..." << "\n";
+        }
 
     }
     catch(const std::exception& e)
