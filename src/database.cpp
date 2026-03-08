@@ -1,9 +1,12 @@
 #include "sqlite3.h"
 #include "database.h"
+#include "accounts.h"
+#include "users.h"
 #include <chrono>
 #include <filesystem>
 #include <format>
 #include <iostream>
+#include <vector>
 
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     int i;
@@ -183,7 +186,6 @@ void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::s
     }
     for (auto const& [key, value]: values)
     {
-        std::cout << "clave: " << key << " valor: " << value << "\n";
         sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
     }
     rc = sqlite3_step(stmt);
@@ -198,7 +200,7 @@ void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::s
     }
 }
 
-void SqlitoSeguro::Database::executeDQL(std::string& query, std::map<int, std::string>& values)
+std::vector<std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::string& query, std::map<int, std::string>& values)
 {
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK)
@@ -207,18 +209,22 @@ void SqlitoSeguro::Database::executeDQL(std::string& query, std::map<int, std::s
     }
     for (auto const& [key, value]: values)
     {
-        std::cout << "clave: " << key << " valor: " << value << "\n";
         sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
     }
-    rc = sqlite3_step(stmt);
-    
-    if (rc == SQLITE_ROW)
-    {
-        std::cout << "Bienvenido " << sqlite3_column_text(stmt, 0) << "!" << "\n";
-    }
-    else
-    {
-        std::cerr << "ERROR AL EJECUTAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
-    }
-}
 
+    std::vector<std::vector<std::string>> rows;
+    int cols {sqlite3_column_count(stmt)};
+
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        std::vector<std::string> row;
+        for (size_t i = 0; i < cols; i++)
+        {
+            const unsigned char* cell = sqlite3_column_text(stmt, i);
+            std::string strCell = reinterpret_cast<const char*>(cell);
+            row.push_back(strCell);
+        }
+        rows.push_back(row);
+    }
+    return rows;
+}

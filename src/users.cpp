@@ -4,11 +4,9 @@
 #include <map>
 #include <chrono>
 #include <format>
+#include <vector>
 
-
-
-void SqlitoSeguro::userManager::createUser(const std::string& username,
-                                            const std::string& password)
+void SqlitoSeguro::userManager::createUser()
 {
     std::string query {"INSERT INTO USERS (username, password, created_at) VALUES (?, ?, ?);"};
     const auto now = std::chrono::system_clock::now();
@@ -16,20 +14,21 @@ void SqlitoSeguro::userManager::createUser(const std::string& username,
     auto time {std::chrono::zoned_time{std::chrono::current_zone(), floorTime}};
     std::string hora {std::format("{:%Y-%m-%d-%T}", time)};
     std::map<int, std::string> values {
-        {1, username},
-        {2, password},
+        {1, m_usuario},
+        {2, m_contrasena},
         {3, hora}
     };
     db.executeDML(query, values);
 }
 
-void SqlitoSeguro::userManager::Authenticate(const std::string& username,
-                                            const std::string& password)
+void SqlitoSeguro::userManager::Authenticate()
 {
-    std::string query {"SELECT username FROM users WHERE username=? AND password=?;"};
+    std::string query {"SELECT id,username FROM users WHERE username=? AND password=?;"};
     std::map<int, std::string> values{
-        {1, username},
-        {2, password}
+        {1, m_usuario},
+        {2, m_contrasena}
     };
-    db.executeDQL(query, values);
+    std::vector<std::vector<std::string>> res;
+    res = db.executeDQL(query, values);
+    std::cout << "bienvenido " << res[0][1] << "!" << "\n";
 }

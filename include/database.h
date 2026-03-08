@@ -6,6 +6,7 @@
 #include <iostream>
 #include <filesystem>
 #include <map>
+#include <vector>
 
 namespace SqlitoSeguro
 {
@@ -26,7 +27,7 @@ namespace SqlitoSeguro
             int setSchemaVersion(int current_ver);
             void backupDatabase();
             void executeDML(std::string& query, std::map<int, std::string>& values);
-            void executeDQL(std::string& query, std::map<int, std::string>& values);
+            std::vector<std::vector<std::string>> executeDQL(std::string& query, std::map<int, std::string>& values);
     };
 }
 

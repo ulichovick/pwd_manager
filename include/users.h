@@ -5,22 +5,28 @@
 
 namespace SqlitoSeguro
 {
+    struct session{
+        int id;
+    };
+
     class userManager
     {
-        /*
-        definir: constructor (crear), actualizar y verificar existencia
-        */
+        
         private:
             Database& db;
+            std::string m_usuario;
+            std::string m_contrasena;
 
         public:
             //constructor
-            userManager(Database& database): db(database){};
+            userManager(Database& database, 
+                        std::string_view usuario, 
+                        std::string_view contrasena): db(database),
+                            m_usuario(usuario),
+                            m_contrasena(contrasena){};
 
-            void createUser(const std::string& username,
-                        const std::string& password);
-            void Authenticate(const std::string& username,
-                        const std::string& password);
+            void createUser();
+            void Authenticate();
     };
 }
 
