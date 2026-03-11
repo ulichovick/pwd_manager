@@ -58,7 +58,6 @@ SqlitoSeguro::Database::~Database()
 {
     if (db)
     {
-        sqlite3_finalize(stmt);
         sqlite3_close(db);
         std::cout << "Database connection closed." << "\n";
     }
@@ -126,7 +125,7 @@ int SqlitoSeguro::Database::getSchemaVersion()
     {
         schemaVersion = sqlite3_column_int(stmt, 0);
     }
-    /* sqlite3_finalize(stmt); */
+    sqlite3_finalize(stmt);
     return schemaVersion;
 }
 
@@ -198,6 +197,7 @@ void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::s
     {
         std::cout << "consulta ejecutada exitosamente! " << "\n";
     }
+    sqlite3_finalize(stmt);
 }
 
 std::vector<std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::string& query, std::map<int, std::string>& values)
@@ -226,5 +226,6 @@ std::vector<std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::st
         }
         rows.push_back(row);
     }
+    sqlite3_finalize(stmt);
     return rows;
 }
