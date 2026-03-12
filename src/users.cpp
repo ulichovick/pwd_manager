@@ -30,5 +30,5 @@ void SqlitoSeguro::userManager::Authenticate()
     };
     std::vector<std::vector<std::string>> res;
     res = db.executeDQL(query, values);
-    std::cout << "bienvenido " << res[0][1] << "!" << "\n";
+    std::cout << "bienvenido " << res[0][1] << "! id:" << res[0][0] << "\n";
 }

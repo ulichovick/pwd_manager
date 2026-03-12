@@ -8,25 +8,20 @@ namespace SqlitoSeguro
     struct Accounts{
         int id;
         int userId;
-        std::string service;
-        std::string username;
-        std::string password;
+        std::string m_service;
+        std::string m_username;
+        std::string m_password;
     };
 
     class accountManager
-    /*
-    solo declarar las clases, toda la definicion  se implementa en el .cpp de la clase
-    */
     {
         private:
             Database& db;
         public:
-            //constructor
             accountManager(Database& database): db(database){};
 
-            void addAccount(int userID,
-                            const std::string& service,
-                            const std::string& username,
+            void addAccount(const std::string& service,
+                            const std::string& login,
                             const std::string& password);
     };
 }

@@ -142,7 +142,6 @@ int SqlitoSeguro::Database::setSchemaVersion(int current_ver)
     } else {
         std::cout << "Database version successfully set to " << std::to_string(current_ver) << "\n";
     }
-    /* sqlite3_finalize(stmt); */
     current_ver = SqlitoSeguro::Database::getSchemaVersion();
     return current_ver;
 }
@@ -192,12 +191,14 @@ void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::s
     if (rc != SQLITE_DONE)
     {
         std::cerr << "ERROR AL EJECUTAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+        sqlite3_finalize(stmt);
     }
     else
     {
         std::cout << "consulta ejecutada exitosamente! " << "\n";
+        sqlite3_finalize(stmt);
     }
-    sqlite3_finalize(stmt);
+    
 }
 
 std::vector<std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::string& query, std::map<int, std::string>& values)
