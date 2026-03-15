@@ -7,6 +7,7 @@
 #include <format>
 #include <iostream>
 #include <vector>
+#include <map>
 
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     int i;
@@ -177,6 +178,8 @@ void SqlitoSeguro::Database::backupDatabase()
 
 void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::string>& values)
 {
+    /* poner un if que verifique el valor del Sess.id, si es cero, continuar como esta,
+    si es diferente incluirlo en el statement */
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK)
     {
@@ -201,7 +204,7 @@ void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::s
     
 }
 
-std::vector<std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::string& query, std::map<int, std::string>& values)
+std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::string& query, std::map<int, std::string>& values)
 {
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK)
@@ -213,20 +216,21 @@ std::vector<std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::st
         sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
     }
 
-    std::vector<std::vector<std::string>> rows;
+    int id;
+    std::vector<std::string> row;
     int cols {sqlite3_column_count(stmt)};
-
+    std::map<int, std::vector<std::string>> resultados;
     while (sqlite3_step(stmt) == SQLITE_ROW)
     {
-        std::vector<std::string> row;
-        for (size_t i = 0; i < cols; i++)
+        id = sqlite3_column_int(stmt, 0);
+        for (size_t i = 1; i < cols; i++)
         {
             const unsigned char* cell = sqlite3_column_text(stmt, i);
             std::string strCell = reinterpret_cast<const char*>(cell);
             row.push_back(strCell);
         }
-        rows.push_back(row);
+        resultados.insert({id, row});
     }
     sqlite3_finalize(stmt);
-    return rows;
+    return resultados;
 }

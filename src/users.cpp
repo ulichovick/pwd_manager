@@ -23,12 +23,19 @@ void SqlitoSeguro::userManager::createUser()
 
 void SqlitoSeguro::userManager::Authenticate()
 {
-    std::string query {"SELECT id,username FROM users WHERE username=? AND password=?;"};
+    std::string query {"SELECT id, username FROM users WHERE username=? AND password=?;"};
     std::map<int, std::string> values{
         {1, m_usuario},
         {2, m_contrasena}
     };
-    std::vector<std::vector<std::string>> res;
+    std::map<int, std::vector<std::string>> res;
     res = db.executeDQL(query, values);
-    std::cout << "bienvenido " << res[0][1] << "! id:" << res[0][0] << "\n";
+    std::cout << "stop" << "\n";
+    for (const auto& [key, values] : res)
+    {
+        currSess.id = key;
+        std::cout << "bienvenido " << values[0] << "\n";
+    }
+    
+    
 }
