@@ -19,7 +19,7 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
 }
 
 /* database class definitinition | declaration */
-/* mover todos los metodos para construir la bd (getschema, setschema) a otra clase */
+/* mover todos los metodos para construir la bd (getschema, setschema) a otra clase migrationManager*/
 SqlitoSeguro::Database::Database(const std::filesystem::path& path) : m_path(path)
 {
     if (!std::filesystem::exists(path))
@@ -74,7 +74,7 @@ void SqlitoSeguro::Database::initialize()
     }
     else
     {
-        std::cout << "Database Exists!" << "\n";
+        std::cout << "Existing Database successfully opened!" << "\n";
     }
 }
 
@@ -237,6 +237,7 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::
     return resultados;
 }
 
+/* Cambiar el retorno de la funcion a un mapa de vectores */
 std::vector<std::string> SqlitoSeguro::Database::executeDQL(std::string& query)
 {
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
