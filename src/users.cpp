@@ -30,12 +30,9 @@ void SqlitoSeguro::userManager::Authenticate()
     };
     std::map<int, std::vector<std::string>> res;
     res = db.executeDQL(query, values);
-    std::cout << "stop" << "\n";
     for (const auto& [key, values] : res)
     {
         currSess.id = key;
         std::cout << "bienvenido " << values[0] << "\n";
     }
-    
-    
 }

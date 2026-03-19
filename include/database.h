@@ -28,6 +28,7 @@ namespace SqlitoSeguro
             void backupDatabase();
             void executeDML(std::string& query, std::map<int, std::string>& values);
             std::map<int, std::vector<std::string>> executeDQL(std::string& query, std::map<int, std::string>& values);
+            std::vector<std::string> executeDQL(std::string& query);
     };
 }
 

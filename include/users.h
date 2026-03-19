@@ -8,7 +8,7 @@ namespace SqlitoSeguro
     struct session{
         int id;
     };
-    SqlitoSeguro::session currSess;
+    inline SqlitoSeguro::session currSess;
     class userManager
     {
         

@@ -33,6 +33,7 @@ int main()
         std::cout << "introduzca la contraseña: " << "\n";
         std::cin >> contrasena;
         SqlitoSeguro::userManager usrs(db1, nombre, contrasena);
+        SqlitoSeguro::accountManager accs(db1);
 
         if (elecc==1)
         {
@@ -41,6 +42,24 @@ int main()
         else if (elecc=2)
         {
             usrs.Authenticate();
+            std::cout << "¿Desea crear una cuenta nueva o listas las cuentas asociadas a este usuario? (1=Crear | 2=Listar)" << "\n";
+            std::cin >> elecc;
+            if (elecc==1)
+            {
+                std::string servicio;
+                std::cout << "introduzca el nombre del servicio donde se encuentra la cuenta: " << "\n";
+                std::cin >> servicio;
+                std::cout << "introduzca el nombre de usuario: " << "\n";
+                std::cin >> nombre;
+                std::cout << "introduzca la contraseña: " << "\n";
+                std::cin >> contrasena;
+                accs.addAccount(servicio, nombre, contrasena);
+            }
+            else
+            {
+                accs.listAccounts();
+            }
+            
         }
         else
         {

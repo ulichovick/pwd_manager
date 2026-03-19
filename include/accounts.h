@@ -23,6 +23,7 @@ namespace SqlitoSeguro
             void addAccount(const std::string& service,
                             const std::string& login,
                             const std::string& password);
+            void listAccounts();
     };
 }
 
