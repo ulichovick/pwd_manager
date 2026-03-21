@@ -2,7 +2,6 @@
 #define DATABASE_H
 
 #include "sqlite3.h"
-#include "migracion.h"
 #include <cstdlib>
 #include <iostream>
 #include <filesystem>
