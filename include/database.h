@@ -2,6 +2,7 @@
 #define DATABASE_H
 
 #include "sqlite3.h"
+#include "migracion.h"
 #include <cstdlib>
 #include <iostream>
 #include <filesystem>
@@ -21,9 +22,9 @@ namespace SqlitoSeguro
         public:
             Database(const std::filesystem::path& path);
             ~Database();
-            void initialize();
+            /* void initialize(); */
             void createSchema();
-            int getSchemaVersion();
+            int executeScalar(std::string& query);
             int setSchemaVersion(int current_ver);
             void backupDatabase();
             void executeDML(std::string& query, std::map<int, std::string>& values);

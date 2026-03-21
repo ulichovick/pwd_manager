@@ -2,6 +2,7 @@
 #include "database.h"
 #include "accounts.h"
 #include "users.h"
+#include "migracion.h"
 #include <chrono>
 #include <filesystem>
 #include <format>
@@ -19,7 +20,6 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
 }
 
 /* database class definitinition | declaration */
-/* mover todos los metodos para construir la bd (getschema, setschema) a otra clase migrationManager*/
 SqlitoSeguro::Database::Database(const std::filesystem::path& path) : m_path(path)
 {
     if (!std::filesystem::exists(path))
@@ -64,19 +64,19 @@ SqlitoSeguro::Database::~Database()
     }
 }
 
-void SqlitoSeguro::Database::initialize()
+/* void SqlitoSeguro::Database::initialize()
 {
-    if (this->getSchemaVersion() == 0)
+    if (migrador->getSchemaVersion() == 0)
     {
         this->createSchema();
-        int newVer {this->setSchemaVersion(1)};
+        int newVer {migrador->setSchemaVersion(1)};
         this->backupDatabase();
     }
     else
     {
         std::cout << "Existing Database successfully opened!" << "\n";
     }
-}
+} */
 
 void SqlitoSeguro::Database::createSchema()
 {
@@ -116,35 +116,18 @@ void SqlitoSeguro::Database::createSchema()
 }
 
 
-int SqlitoSeguro::Database::getSchemaVersion()
+int SqlitoSeguro::Database::executeScalar(std::string& query)
 {
     int rc;
-    rc = sqlite3_prepare_v2(db, "PRAGMA user_version;", -1, &stmt, nullptr );
+    rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr );
     rc = sqlite3_step(stmt);
-    int schemaVersion {};
+    int res {};
     if (rc == SQLITE_ROW)
     {
-        schemaVersion = sqlite3_column_int(stmt, 0);
+        res = sqlite3_column_int(stmt, 0);
     }
     sqlite3_finalize(stmt);
-    return schemaVersion;
-}
-
-/* convertir el execute en un prepared statement */
-int SqlitoSeguro::Database::setSchemaVersion(int current_ver)
-{
-    int rc;
-    std::string sql = "PRAGMA user_version="+ std::to_string(current_ver);
-
-    rc = sqlite3_exec(db, sql.c_str(), callback, 0, &zErrMsg);
-
-    if (rc != SQLITE_OK) {
-        std::cerr << "Failed to set user_version PRAGMA: " << sqlite3_errmsg(db) << "\n";
-    } else {
-        std::cout << "Database version successfully set to " << std::to_string(current_ver) << "\n";
-    }
-    current_ver = SqlitoSeguro::Database::getSchemaVersion();
-    return current_ver;
+    return res;
 }
 
 void SqlitoSeguro::Database::backupDatabase()

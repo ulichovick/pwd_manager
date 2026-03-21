@@ -5,14 +5,6 @@
 
 namespace SqlitoSeguro
 {
-    struct Accounts{
-        int id;
-        int userId;
-        std::string m_service;
-        std::string m_username;
-        std::string m_password;
-    };
-
     class accountManager
     {
         private:

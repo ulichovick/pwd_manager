@@ -4,23 +4,18 @@
 #include "database.h"
 #include "accounts.h"
 #include "users.h"
-
-//mandar esto como funcion miembro de una clase
+#include "migracion.h"
 
 int main()
 {
-    /*
-    sqlite3_exec(db, "PRAGMA foreign_keys=ON;", callback, 0, &zErrMsg);
-    sqlite3_exec(db, "PRAGMA user_version=1;", callback, 0, &zErrMsg);
-    */
-
     try
     {
         const char* home {std::getenv("HOME")};
         std::filesystem::path directorio {std::filesystem::path(home) / ".local" / "share" / "pwd_manager" / "vault.db"};
         SqlitoSeguro::Database db1(directorio);
-
-        db1.initialize();
+        
+        SqlitoSeguro::migrationManager migrador(db1,2);
+        migrador.initialize();
 
         std::string nombre;
         std::string contrasena;
