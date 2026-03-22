@@ -115,7 +115,6 @@ void SqlitoSeguro::Database::createSchema()
     }
 }
 
-
 int SqlitoSeguro::Database::executeScalar(std::string& query)
 {
     int rc;
