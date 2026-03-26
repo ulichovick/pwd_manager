@@ -27,11 +27,28 @@ void SqlitoSeguro::accountManager::addAccount(const std::string& service,
 void SqlitoSeguro::accountManager::listAccounts()
 {
     std::string query {"SELECT service FROM accounts WHERE user_id=?;"};
-    std::vector<std::string> res;
+    std::map<int, std::vector<std::string>> res;
     res = db.executeDQL(query);
-    std::cout << "Cuentas: " << "\n";
-    for (const auto& cuenta : res)
+    std::cout << "ID" << "\t"  << " Nombre " << "\n";
+    for (const auto& [key, values] : res)
     {
-        std::cout << cuenta << "\n";
+        std::cout << key+1 << "\t" << values[0] << "\n";
     }
+}
+
+void SqlitoSeguro::accountManager::detailAccount(int accId)
+{
+    std::string query {"SELECT service, login, password, created_at  FROM accounts WHERE user_id=? AND id=?;"};
+    std::map<int, std::vector<std::string>> res;
+    res = db.executeDQL(query, accId);
+    std::cout << "ID" << "\t" << "Nombre" << "\t" << "Username" << "\t" << "Contraseña" << "\t" << "Fecha de creación" << "\t" << "\n";
+    for (const auto& [key, values] : res)
+    {
+        std::cout << key << "\t";
+        for (const auto& cuenta : values)
+        {
+            std::cout << cuenta << "\t";
+        }
+    }
+    std::cout << "\n";
 }

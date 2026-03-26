@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <optional>
 
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     int i;
@@ -205,26 +206,35 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::
     return resultados;
 }
 
-/* Cambiar el retorno de la funcion a un mapa de vectores, creo que lo mejor sera usar una funcion con parametros opcionales(?) */
-std::vector<std::string> SqlitoSeguro::Database::executeDQL(std::string& query)
+
+std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::string& query, std::optional<int> value)
 {
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK)
     {
         std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
     }
+    
     sqlite3_bind_int(stmt, 1, currSess.id);
-
+    if (value.has_value())
+    {
+        sqlite3_bind_int(stmt, 2, value.value());
+    }
+    
+    int id;
+    std::vector<std::string> row;
     int cols {sqlite3_column_count(stmt)};
-    std::vector<std::string> resultados;
+    std::map<int, std::vector<std::string>> resultados;
     while (sqlite3_step(stmt) == SQLITE_ROW)
     {
+        id = sqlite3_column_int(stmt, 0);
         for (size_t i = 0; i < cols; i++)
         {
             const unsigned char* cell = sqlite3_column_text(stmt, i);
             std::string strCell = reinterpret_cast<const char*>(cell);
-            resultados.push_back(strCell);
+            row.push_back(strCell);
         }
+        resultados.insert({id, row});
     }
     sqlite3_finalize(stmt);
     return resultados;

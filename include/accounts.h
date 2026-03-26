@@ -16,6 +16,7 @@ namespace SqlitoSeguro
                             const std::string& login,
                             const std::string& password);
             void listAccounts();
+            void detailAccount(int accId);
     };
 }
 

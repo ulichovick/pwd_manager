@@ -53,8 +53,10 @@ int main()
             else
             {
                 accs.listAccounts();
+                std::cout << "Introduzca el ID de la cuenta de la que se quiere ver mas detalles: " << "\n";
+                std::cin >> elecc;
+                accs.detailAccount(elecc);
             }
-            
         }
         else
         {
