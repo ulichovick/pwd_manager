@@ -64,20 +64,6 @@ SqlitoSeguro::Database::~Database()
     }
 }
 
-/* void SqlitoSeguro::Database::initialize()
-{
-    if (migrador->getSchemaVersion() == 0)
-    {
-        this->createSchema();
-        int newVer {migrador->setSchemaVersion(1)};
-        this->backupDatabase();
-    }
-    else
-    {
-        std::cout << "Existing Database successfully opened!" << "\n";
-    }
-} */
-
 void SqlitoSeguro::Database::createSchema()
 {
     const char* userSql = "CREATE TABLE users ("
@@ -219,7 +205,7 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::
     return resultados;
 }
 
-/* Cambiar el retorno de la funcion a un mapa de vectores */
+/* Cambiar el retorno de la funcion a un mapa de vectores, creo que lo mejor sera usar una funcion con parametros opcionales(?) */
 std::vector<std::string> SqlitoSeguro::Database::executeDQL(std::string& query)
 {
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
