@@ -14,6 +14,7 @@ namespace SqlitoSeguro
             migrationManager(Database& database, int t): db(database),
                                                             test(t){std::cout << "test \n";};
             void initialize();
+            void createSchema();
             int getSchemaVersion();
             int setSchemaVersion(int current_ver);
     };

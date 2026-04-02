@@ -65,53 +65,17 @@ SqlitoSeguro::Database::~Database()
     }
 }
 
-void SqlitoSeguro::Database::createSchema()
-{
-    const char* userSql = "CREATE TABLE users ("
-        "id INTEGER PRIMARY KEY,"
-        "username TEXT NOT NULL UNIQUE,"
-        "password TEXT NOT NULL,"
-        "created_at TEXT NOT NULL"
-        ");" ;
-
-    const char* accountsSql = "CREATE TABLE accounts ("
-        "id INTEGER PRIMARY KEY,"
-        "user_id INTEGER NOT NULL,"
-        "service TEXT NOT NULL,"
-        "login TEXT NOT NULL,"
-        "password TEXT NOT NULL,"
-        "created_at TEXT NOT NULL,"
-        "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
-        ");";
-
-    int exitCode = sqlite3_exec(db, userSql, NULL, 0, &zErrMsg);
-
-    if (exitCode != SQLITE_OK) {
-        std::cerr << "Error creating table Users: " << sqlite3_errmsg(db) << "\n";
-    } 
-    else {
-        std::cout << "Table Users created successfully" << "\n";
-    }
-
-    exitCode = sqlite3_exec(db, accountsSql, NULL, 0, &zErrMsg);
-
-    if (exitCode != SQLITE_OK) {
-        std::cerr << "Error creating table Accounts: " << sqlite3_errmsg(db) << "\n";
-    } else {
-        std::cout << "Table Accounts created successfully" << "\n";
-    }
-}
-
 int SqlitoSeguro::Database::executeScalar(std::string& query)
 {
     int rc;
     rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr );
     rc = sqlite3_step(stmt);
     int res {};
-    if (rc == SQLITE_ROW)
+    if (!rc == SQLITE_ROW)
     {
-        res = sqlite3_column_int(stmt, 0);
+        std::cerr << "Error executing Query: " << sqlite3_errmsg(db) << "\n";
     }
+    res = sqlite3_column_int(stmt, 0);
     sqlite3_finalize(stmt);
     return res;
 }

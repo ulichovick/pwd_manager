@@ -8,23 +8,59 @@ void SqlitoSeguro::migrationManager::initialize()
 {
     if (this->getSchemaVersion() == 0)
     {
-        db.createSchema();
+        this->createSchema();
         int newVer {this->setSchemaVersion(1)};
         db.backupDatabase();
     }
     else
     {
-        std::cout << "Existing Database successfully opened!" << "\n";
+        std::cout << "Database found, opening!..." << "\n";
     }
 }
 
+void SqlitoSeguro::migrationManager::createSchema()
+{
+    std::string userSql = "CREATE TABLE users ("
+        "id INTEGER PRIMARY KEY,"
+        "username TEXT NOT NULL UNIQUE,"
+        "password TEXT NOT NULL,"
+        "created_at TEXT NOT NULL"
+        ");" ;
+
+    std::string accountsSql = "CREATE TABLE accounts ("
+        "id INTEGER PRIMARY KEY,"
+        "user_id INTEGER NOT NULL,"
+        "service TEXT NOT NULL,"
+        "login TEXT NOT NULL,"
+        "password TEXT NOT NULL,"
+        "created_at TEXT NOT NULL,"
+        "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+        ");";
+
+    int exitCode {};
+
+    exitCode = db.executeScalar(userSql);
+
+    if (exitCode != SQLITE_OK) {
+        std::cerr << "Error creating table Users: " << "\n";
+    } 
+    else {
+        std::cout << "Table Users created successfully" << "\n";
+    }
+
+    exitCode = db.executeScalar(accountsSql);
+
+    if (exitCode != SQLITE_OK) {
+        std::cerr << "Error creating table Accounts: " << "\n";
+    } else {
+        std::cout << "Table Accounts created successfully" << "\n";
+    }
+}
 
 int SqlitoSeguro::migrationManager::getSchemaVersion()
 {
     int rc;
     std::string query {"PRAGMA user_version;"};
-    /* rc = sqlite3_prepare_v2(db, "PRAGMA user_version;", -1, &stmt, nullptr ); */
-    /* rc = sqlite3_step(stmt); */
     int schemaVersion {db.executeScalar(query)};
     return schemaVersion;
 }

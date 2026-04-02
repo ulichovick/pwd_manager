@@ -11,7 +11,7 @@ int main()
     try
     {
         const char* home {std::getenv("HOME")};
-        std::filesystem::path directorio {std::filesystem::path(home) / ".local" / "share" / "pwd_manager" / "vault.db"};
+        std::filesystem::path directorio {std::filesystem::path(home) / ".local" / "share" / "pwd_manager_test" / "vault.db"};
         SqlitoSeguro::Database db1(directorio);
         
         SqlitoSeguro::migrationManager migrador(db1,2);
