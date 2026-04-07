@@ -120,9 +120,42 @@ void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::s
     {
         sqlite3_bind_int(stmt, 1, currSess.id);
     }
-    for (auto const& [key, value]: values)
+    if (!values.empty())
     {
-        sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
+        for (auto const& [key, value]: values)
+        {
+            sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
+        }
+    }
+    rc = sqlite3_step(stmt);
+    
+    if (rc != SQLITE_DONE)
+    {
+        std::cerr << "ERROR AL EJECUTAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+        sqlite3_finalize(stmt);
+    }
+    else
+    {
+        std::cout << "consulta ejecutada exitosamente! " << "\n";
+        sqlite3_finalize(stmt);
+    }
+    
+}
+
+void SqlitoSeguro::Database::executeDML(std::string& query)
+{
+    int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK)
+    {
+        std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+    }
+    if (currSess.id)
+    {
+        sqlite3_bind_int(stmt, 1, currSess.id);
+    }
+    if (currSess.accId)
+    {
+        sqlite3_bind_int(stmt, 2, currSess.accId);
     }
     rc = sqlite3_step(stmt);
     
@@ -192,13 +225,24 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::
     while (sqlite3_step(stmt) == SQLITE_ROW)
     {
         id = sqlite3_column_int(stmt, 0);
-        for (size_t i = 0; i < cols; i++)
+        if (cols > 2)
         {
-            const unsigned char* cell = sqlite3_column_text(stmt, i);
-            std::string strCell = reinterpret_cast<const char*>(cell);
-            row.push_back(strCell);
+            for (size_t i = 0; i < cols; i++)
+            {
+                const unsigned char* cell = sqlite3_column_text(stmt, i);
+                std::string strCell = reinterpret_cast<const char*>(cell);
+                row.push_back(strCell);
+            }
+            resultados.insert({id, row});
         }
-        resultados.insert({id, row});
+        else
+        {
+            const unsigned char* cell = sqlite3_column_text(stmt, 1);
+            std::string strCell = reinterpret_cast<const char*>(cell);
+            std::vector<std::string> row{strCell};
+            resultados.insert({id, row});
+        }
+        
     }
     sqlite3_finalize(stmt);
     return resultados;

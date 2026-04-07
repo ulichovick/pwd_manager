@@ -11,7 +11,7 @@ int main()
     try
     {
         const char* home {std::getenv("HOME")};
-        std::filesystem::path directorio {std::filesystem::path(home) / ".local" / "share" / "pwd_manager_test" / "vault.db"};
+        std::filesystem::path directorio {std::filesystem::path(home) / ".local" / "share" / "pwd_manager" / "vault.db"};
         SqlitoSeguro::Database db1(directorio);
         
         SqlitoSeguro::migrationManager migrador(db1,2);
@@ -56,6 +56,18 @@ int main()
                 std::cout << "Introduzca el ID de la cuenta de la que se quiere ver mas detalles: " << "\n";
                 std::cin >> elecc;
                 accs.detailAccount(elecc);
+                std::cout << "¿Desea realizar una acción relacionada a esta cue nta? (1=eliminar | 2=editar)" << "\n";
+                std::cin >> elecc;
+                if (elecc=1)
+                {
+                    std::cout << "¿está seguro que desea eliminar la cuenta?" << "\n";
+                    std::cin >> elecc;
+                    if (elecc=1)
+                    {
+                        accs.deleteAccount();
+                    }
+                }
+                
             }
         }
         else

@@ -24,31 +24,39 @@ void SqlitoSeguro::accountManager::addAccount(const std::string& service,
     db.executeDML(query, values);
 }
 
+/* arreglar el listar cuentas */
 void SqlitoSeguro::accountManager::listAccounts()
 {
-    std::string query {"SELECT service FROM accounts WHERE user_id=?;"};
+    std::string query {"SELECT id, service FROM accounts WHERE user_id=?"};
     std::map<int, std::vector<std::string>> res;
     res = db.executeDQL(query);
     std::cout << "ID" << "\t"  << " Nombre " << "\n";
     for (const auto& [key, values] : res)
     {
-        std::cout << key+1 << "\t" << values[0] << "\n";
+        std::cout << key << "\t" << values[0] << "\n";
     }
 }
 
 void SqlitoSeguro::accountManager::detailAccount(int accId)
 {
-    std::string query {"SELECT service, login, password, created_at  FROM accounts WHERE user_id=? AND id=?;"};
+    std::string query {"SELECT id, service, login, password, created_at  FROM accounts WHERE user_id=? AND id=?;"};
     std::map<int, std::vector<std::string>> res;
     res = db.executeDQL(query, accId);
     std::cout << "ID" << "\t" << "Nombre" << "\t" << "Username" << "\t" << "Contraseña" << "\t" << "Fecha de creación" << "\t" << "\n";
     for (const auto& [key, values] : res)
     {
-        std::cout << key << "\t";
+        currSess.accId = key;
         for (const auto& cuenta : values)
         {
             std::cout << cuenta << "\t";
         }
     }
     std::cout << "\n";
+}
+
+void SqlitoSeguro::accountManager::deleteAccount()
+{
+    std::string query {"DELETE FROM accounts WHERE user_id=? AND id=?;"};
+    std::map<int, std::vector<std::string>> res;
+    db.executeDML(query);
 }

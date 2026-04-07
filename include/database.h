@@ -11,6 +11,11 @@
 
 namespace SqlitoSeguro
 {
+    struct session{
+        int id;
+        int accId;
+    };
+    inline SqlitoSeguro::session currSess;
     class Database
     {
         private: 
@@ -28,6 +33,7 @@ namespace SqlitoSeguro
             int setSchemaVersion(int current_ver);
             void backupDatabase();
             void executeDML(std::string& query, std::map<int, std::string>& values);
+            void executeDML(std::string& query);
             std::map<int, std::vector<std::string>> executeDQL(std::string& query, std::map<int, std::string>& values);
             std::map<int, std::vector<std::string>> executeDQL(std::string& query, std::optional<int> values = std::nullopt);
     };

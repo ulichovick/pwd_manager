@@ -5,10 +5,6 @@
 
 namespace SqlitoSeguro
 {
-    struct session{
-        int id;
-    };
-    inline SqlitoSeguro::session currSess;
     class userManager
     {
         
