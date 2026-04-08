@@ -10,7 +10,7 @@ void SqlitoSeguro::accountManager::addAccount(const std::string& service,
                                             const std::string& login,
                                             const std::string& password)
 {
-    std::string query {"INSERT INTO ACCOUNTS (user_id, service, login, password, created_at) VALUES (?, ?, ?, ?, ?);"};
+    std::string query {"INSERT INTO accounts (user_id, service, login, password, created_at) VALUES (?, ?, ?, ?, ?);"};
     const auto now = std::chrono::system_clock::now();
     auto floorTime {std::chrono::floor<std::chrono::seconds>(now)};
     auto time {std::chrono::zoned_time{std::chrono::current_zone(), floorTime}};
@@ -27,7 +27,7 @@ void SqlitoSeguro::accountManager::addAccount(const std::string& service,
 /* arreglar el listar cuentas */
 void SqlitoSeguro::accountManager::listAccounts()
 {
-    std::string query {"SELECT id, service FROM accounts WHERE user_id=?"};
+    std::string query {"SELECT id, service FROM accounts WHERE user_id=?;"};
     std::map<int, std::vector<std::string>> res;
     res = db.executeDQL(query);
     std::cout << "ID" << "\t"  << " Nombre " << "\n";
@@ -59,4 +59,25 @@ void SqlitoSeguro::accountManager::deleteAccount()
     std::string query {"DELETE FROM accounts WHERE user_id=? AND id=?;"};
     std::map<int, std::vector<std::string>> res;
     db.executeDML(query);
+}
+
+/* Temporal hasta tener el GUI */
+void SqlitoSeguro::accountManager::editAccount(const std::string& service,
+                                            const std::string& login,
+                                            const std::string& password)
+{
+    std::string query {"UPDATE accounts SET service= ?, login = ?, password = ?, created_at = ? WHERE user_id=? AND id=?;"};
+    const auto now = std::chrono::system_clock::now();
+    auto floorTime {std::chrono::floor<std::chrono::seconds>(now)};
+    auto time {std::chrono::zoned_time{std::chrono::current_zone(), floorTime}};
+    std::string hora {std::format("{:%Y-%m-%d-%T}", time)};
+    std::map<int, std::string> values {
+        {1, service},
+        {2, login},
+        {3, password},
+        {4, hora}
+    };
+    db.executeDML(query, values, 5, 6);
+    std::cout << "cuenta editada exitosamente" << "\n";
+    currSess.accId = 0;
 }

@@ -18,6 +18,7 @@ void SqlitoSeguro::migrationManager::initialize()
     }
 }
 
+/* cambiar la columna created_at a last_updated */
 void SqlitoSeguro::migrationManager::createSchema()
 {
     std::string userSql = "CREATE TABLE users ("

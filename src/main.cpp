@@ -58,7 +58,7 @@ int main()
                 accs.detailAccount(elecc);
                 std::cout << "¿Desea realizar una acción relacionada a esta cue nta? (1=eliminar | 2=editar)" << "\n";
                 std::cin >> elecc;
-                if (elecc=1)
+                if (elecc==1)
                 {
                     std::cout << "¿está seguro que desea eliminar la cuenta?" << "\n";
                     std::cin >> elecc;
@@ -67,7 +67,17 @@ int main()
                         accs.deleteAccount();
                     }
                 }
-                
+                else if(elecc==2)
+                {
+                    std::string servicio;
+                    std::cout << "introduzca el nombre del servicio donde se encuentra la cuenta: " << "\n";
+                    std::cin >> servicio;
+                    std::cout << "introduzca el nombre de usuario: " << "\n";
+                    std::cin >> nombre;
+                    std::cout << "introduzca la contraseña: " << "\n";
+                    std::cin >> contrasena;
+                    accs.editAccount(servicio, nombre, contrasena);
+                }
             }
         }
         else

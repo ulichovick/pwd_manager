@@ -109,7 +109,7 @@ void SqlitoSeguro::Database::backupDatabase()
         std::filesystem::perm_options::replace);
 }
 
-void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::string>& values)
+void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::string>& values, std::optional<int> posid, std::optional<int>posaccid)
 {
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK)
@@ -118,7 +118,11 @@ void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::s
     }
     if (currSess.id)
     {
-        sqlite3_bind_int(stmt, 1, currSess.id);
+        sqlite3_bind_int(stmt, posid.value(), currSess.id);
+    }
+    if (currSess.accId)
+    {
+        sqlite3_bind_int(stmt, posaccid.value(), currSess.accId);
     }
     if (!values.empty())
     {
