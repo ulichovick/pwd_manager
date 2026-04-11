@@ -22,7 +22,7 @@ namespace SqlitoSeguro
                             m_contrasena(contrasena){};
 
             void createUser();
-            void Authenticate();
+            int Authenticate();
     };
 }
 

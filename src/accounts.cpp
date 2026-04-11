@@ -45,7 +45,6 @@ void SqlitoSeguro::accountManager::detailAccount(int accId)
     std::cout << "ID" << "\t" << "Nombre" << "\t" << "Username" << "\t" << "Contraseña" << "\t" << "Fecha de creación" << "\t" << "\n";
     for (const auto& [key, values] : res)
     {
-        currSess.accId = key;
         for (const auto& cuenta : values)
         {
             std::cout << cuenta << "\t";
@@ -79,5 +78,4 @@ void SqlitoSeguro::accountManager::editAccount(const std::string& service,
     };
     db.executeDML(query, values, 5, 6);
     std::cout << "cuenta editada exitosamente" << "\n";
-    currSess.accId = 0;
 }

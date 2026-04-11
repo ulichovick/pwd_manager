@@ -11,11 +11,6 @@
 
 namespace SqlitoSeguro
 {
-    struct session{
-        int id;
-        int accId;
-    };
-    inline SqlitoSeguro::session currSess;
     class Database
     {
         private: 

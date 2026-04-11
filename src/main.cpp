@@ -6,6 +6,26 @@
 #include "users.h"
 #include "migracion.h"
 
+namespace SqlitoSeguro
+{
+    struct session{
+        int userId;
+        int accId;
+
+        bool isLogged() const
+        {
+            return  userId != 0;
+        }
+
+        void clear()
+        {
+            userId = 0;
+            accId = 0;
+        }
+    };
+} 
+
+
 int main()
 {
     try
@@ -16,6 +36,8 @@ int main()
         
         SqlitoSeguro::migrationManager migrador(db1,2);
         migrador.initialize();
+
+        SqlitoSeguro::session currSess;
 
         std::string nombre;
         std::string contrasena;
@@ -36,7 +58,7 @@ int main()
         }
         else if (elecc=2)
         {
-            usrs.Authenticate();
+            currSess.userId = usrs.Authenticate();
             std::cout << "¿Desea crear una cuenta nueva o listas las cuentas asociadas a este usuario? (1=Crear | 2=Listar)" << "\n";
             std::cin >> elecc;
             if (elecc==1)

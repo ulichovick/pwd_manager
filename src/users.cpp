@@ -21,8 +21,9 @@ void SqlitoSeguro::userManager::createUser()
     db.executeDML(query, values);
 }
 
-void SqlitoSeguro::userManager::Authenticate()
+int SqlitoSeguro::userManager::Authenticate()
 {
+    
     std::string query {"SELECT id, username FROM users WHERE username=? AND password=?;"};
     std::map<int, std::string> values{
         {1, m_usuario},
@@ -32,7 +33,7 @@ void SqlitoSeguro::userManager::Authenticate()
     res = db.executeDQL(query, values);
     for (const auto& [key, values] : res)
     {
-        currSess.id = key;
+        int usrId{key};
         std::cout << "bienvenido " << values[0] << "\n";
     }
 }
