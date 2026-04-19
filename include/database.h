@@ -14,7 +14,6 @@ namespace SqlitoSeguro
     class Database
     {
         private: 
-            sqlite3_stmt* stmt = nullptr;
             sqlite3* db = nullptr;
             char *zErrMsg = 0;
             const std::filesystem::path m_path;
@@ -27,10 +26,10 @@ namespace SqlitoSeguro
             int executeScalar(std::string& query);
             int setSchemaVersion(int current_ver);
             void backupDatabase();
-            void executeDML(std::string& query, std::map<int, std::string>& values, std::optional<int> posid = 1, std::optional<int>posaccid = std::nullopt);
+            void executeDML(std::string& query, std::map<int, std::string>& values);
             void executeDML(std::string& query);
             std::map<int, std::vector<std::string>> executeDQL(std::string& query, std::map<int, std::string>& values);
-            std::map<int, std::vector<std::string>> executeDQL(std::string& query, std::optional<int> values = std::nullopt);
+            std::map<int, std::vector<std::string>> executeDQL(std::string& query, int usrId, std::optional<int> accId = std::nullopt);
     };
 }
 

@@ -70,14 +70,14 @@ int main()
                 std::cin >> nombre;
                 std::cout << "introduzca la contraseña: " << "\n";
                 std::cin >> contrasena;
-                accs.addAccount(servicio, nombre, contrasena);
+                accs.addAccount(servicio, nombre, contrasena, currSess.userId);
             }
             else
             {
-                accs.listAccounts();
+                accs.listAccounts(currSess.userId);
                 std::cout << "Introduzca el ID de la cuenta de la que se quiere ver mas detalles: " << "\n";
                 std::cin >> elecc;
-                accs.detailAccount(elecc);
+                accs.detailAccount(currSess.userId, elecc);
                 std::cout << "¿Desea realizar una acción relacionada a esta cue nta? (1=eliminar | 2=editar)" << "\n";
                 std::cin >> elecc;
                 if (elecc==1)
@@ -86,7 +86,7 @@ int main()
                     std::cin >> elecc;
                     if (elecc=1)
                     {
-                        accs.deleteAccount();
+                        accs.deleteAccount(currSess.userId , currSess.accId);
                     }
                 }
                 else if(elecc==2)
@@ -98,7 +98,7 @@ int main()
                     std::cin >> nombre;
                     std::cout << "introduzca la contraseña: " << "\n";
                     std::cin >> contrasena;
-                    accs.editAccount(servicio, nombre, contrasena);
+                    accs.editAccount(servicio, nombre, contrasena, currSess.userId , currSess.accId);
                 }
             }
         }

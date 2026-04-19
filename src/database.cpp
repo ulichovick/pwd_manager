@@ -67,6 +67,7 @@ SqlitoSeguro::Database::~Database()
 
 int SqlitoSeguro::Database::executeScalar(std::string& query)
 {
+    sqlite3_stmt* stmt = nullptr;
     int rc;
     rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr );
     rc = sqlite3_step(stmt);
@@ -109,20 +110,13 @@ void SqlitoSeguro::Database::backupDatabase()
         std::filesystem::perm_options::replace);
 }
 
-void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::string>& values, std::optional<int> posid, std::optional<int>posaccid)
+void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::string>& values)
 {
+    sqlite3_stmt* stmt = nullptr;
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK)
     {
         std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
-    }
-    if (currSess.id)
-    {
-        sqlite3_bind_int(stmt, posid.value(), currSess.id);
-    }
-    if (currSess.accId)
-    {
-        sqlite3_bind_int(stmt, posaccid.value(), currSess.accId);
     }
     if (!values.empty())
     {
@@ -146,38 +140,9 @@ void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::s
     
 }
 
-void SqlitoSeguro::Database::executeDML(std::string& query)
-{
-    int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
-    if (rc != SQLITE_OK)
-    {
-        std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
-    }
-    if (currSess.id)
-    {
-        sqlite3_bind_int(stmt, 1, currSess.id);
-    }
-    if (currSess.accId)
-    {
-        sqlite3_bind_int(stmt, 2, currSess.accId);
-    }
-    rc = sqlite3_step(stmt);
-    
-    if (rc != SQLITE_DONE)
-    {
-        std::cerr << "ERROR AL EJECUTAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
-        sqlite3_finalize(stmt);
-    }
-    else
-    {
-        std::cout << "consulta ejecutada exitosamente! " << "\n";
-        sqlite3_finalize(stmt);
-    }
-    
-}
-
 std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::string& query, std::map<int, std::string>& values)
 {
+    sqlite3_stmt* stmt = nullptr;
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK)
     {
@@ -208,20 +173,21 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::
 }
 
 
-std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::string& query, std::optional<int> value)
+std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::string& query, int usrId, std::optional<int> accId)
 {
+    sqlite3_stmt* stmt = nullptr;
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK)
     {
         std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
     }
     
-    sqlite3_bind_int(stmt, 1, currSess.id);
-    if (value.has_value())
+    sqlite3_bind_int(stmt, 1, usrId);
+    if (accId.has_value())
     {
-        sqlite3_bind_int(stmt, 2, value.value());
+        sqlite3_bind_int(stmt, 2, accId.value());
     }
-    
+
     int id;
     std::vector<std::string> row;
     int cols {sqlite3_column_count(stmt)};
