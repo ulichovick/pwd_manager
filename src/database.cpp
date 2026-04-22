@@ -110,6 +110,7 @@ void SqlitoSeguro::Database::backupDatabase()
         std::filesystem::perm_options::replace);
 }
 
+/* actualizar para bind_int los ID */
 void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::string>& values)
 {
     sqlite3_stmt* stmt = nullptr;
