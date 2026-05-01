@@ -17,13 +17,12 @@ void SqlitoSeguro::accountManager::addAccount(const std::string& service,
     auto time {std::chrono::zoned_time{std::chrono::current_zone(), floorTime}};
     std::string hora {std::format("{:%Y-%m-%d-%T}", time)};
     std::map<int, std::string> values {
-        {1, std::to_string(usrId)},
         {2, service},
         {3, login},
         {4, password},
         {5, hora}
     };
-    db.executeDML(query, values);
+    db.executeDML(query, values, usrId, 1);
 }
 
 /* arreglar el listar cuentas */
@@ -39,31 +38,31 @@ void SqlitoSeguro::accountManager::listAccounts(int usrId)
     }
 }
 
-void SqlitoSeguro::accountManager::detailAccount(int usrId, int accId)
+int SqlitoSeguro::accountManager::detailAccount(int usrId, int accId)
 {
     std::string query {"SELECT id, service, login, password, created_at  FROM accounts WHERE user_id=? AND id=?;"};
     std::map<int, std::vector<std::string>> res;
     res = db.executeDQL(query, usrId, accId);
+    int tmp {};
     std::cout << "ID" << "\t" << "Nombre" << "\t" << "Username" << "\t" << "Contraseña" << "\t" << "Fecha de creación" << "\t" << "\n";
     for (const auto& [key, values] : res)
     {
+        tmp = key;
         for (const auto& cuenta : values)
         {
             std::cout << cuenta << "\t";
         }
     }
     std::cout << "\n";
+    return tmp;
 }
 
 void SqlitoSeguro::accountManager::deleteAccount(int usrId, int accId)
 {
     std::string query {"DELETE FROM accounts WHERE user_id=? AND id=?;"};
     std::map<int, std::vector<std::string>> res;
-    std::map<int, std::string> values {
-        {1, std::to_string(usrId)},
-        {2, std::to_string(accId)}
-    };
-    db.executeDML(query, values);
+    std::map<int, std::string> values {};
+    db.executeDML(query, values, usrId, accId, 1, 2);
 }
 
 /* Temporal hasta tener el GUI */
@@ -83,9 +82,7 @@ void SqlitoSeguro::accountManager::editAccount(const std::string& service,
         {2, login},
         {3, password},
         {4, hora},
-        {5, std::to_string(usrId)},
-        {6, std::to_string(accId)}
     };
-    db.executeDML(query, values);
+    db.executeDML(query, values, usrId, accId, 5, 6);
     std::cout << "cuenta editada exitosamente" << "\n";
 }

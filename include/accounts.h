@@ -17,7 +17,7 @@ namespace SqlitoSeguro
                             const std::string& password, 
                             int usrId);
             void listAccounts(int usrId);
-            void detailAccount(int usrId, int accId);
+            int detailAccount(int usrId, int accId);
             void deleteAccount(int usrId, int accId);
             void editAccount(const std::string& service,
                                             const std::string& login,

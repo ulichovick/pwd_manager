@@ -77,7 +77,7 @@ int main()
                 accs.listAccounts(currSess.userId);
                 std::cout << "Introduzca el ID de la cuenta de la que se quiere ver mas detalles: " << "\n";
                 std::cin >> elecc;
-                accs.detailAccount(currSess.userId, elecc);
+                currSess.accId = accs.detailAccount(currSess.userId, elecc);
                 std::cout << "¿Desea realizar una acción relacionada a esta cue nta? (1=eliminar | 2=editar)" << "\n";
                 std::cin >> elecc;
                 if (elecc==1)

@@ -11,19 +11,10 @@
 #include <map>
 #include <optional>
 
-static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
-    int i;
-    for(i = 0; i<argc; i++) {
-        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-    }
-    printf("\n");
-    return 0;
-}
-
 /* database class definitinition | declaration */
 SqlitoSeguro::Database::Database(const std::filesystem::path& path) : m_path(path)
 {
-    if (!std::filesystem::exists(path))
+    if (!std::filesystem::exists(path.parent_path()))
     {
         std::filesystem::create_directories(path.parent_path());
     }
@@ -53,7 +44,7 @@ SqlitoSeguro::Database::Database(const std::filesystem::path& path) : m_path(pat
         std::filesystem::perm_options::replace
     );
     }
-    sqlite3_exec(db, "PRAGMA foreign_keys=ON;", callback, 0, &zErrMsg);
+    sqlite3_exec(db, "PRAGMA foreign_keys=ON;", nullptr, nullptr, nullptr);
 }
 
 SqlitoSeguro::Database::~Database()
@@ -61,21 +52,25 @@ SqlitoSeguro::Database::~Database()
     if (db)
     {
         sqlite3_close(db);
-        std::cout << "Database connection closed." << "\n";
     }
 }
 
-int SqlitoSeguro::Database::executeScalar(std::string& query)
+int SqlitoSeguro::Database::executeScalar(const std::string& query)
 {
     sqlite3_stmt* stmt = nullptr;
     int rc;
     rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr );
-    rc = sqlite3_step(stmt);
-    int res {};
-    if (!rc == SQLITE_ROW)
+    if (rc != SQLITE_ROW)
     {
         std::cerr << "Error executing Query: " << sqlite3_errmsg(db) << "\n";
     }
+    rc = sqlite3_step(stmt);
+    
+    if (rc != SQLITE_ROW)
+    {
+        std::cerr << "Error executing Query: " << sqlite3_errmsg(db) << "\n";
+    }
+    int res {};
     res = sqlite3_column_int(stmt, 0);
     sqlite3_finalize(stmt);
     return res;
@@ -98,12 +93,11 @@ void SqlitoSeguro::Database::backupDatabase()
         "main"
     );
 
-    if(!backup)
+    if (sqlite3_backup_step(backup, -1) != SQLITE_DONE)
     {
-        throw std::runtime_error("backup failed!");
+        sqlite3_backup_finish(backup);
+        throw std::runtime_error("Backup failed");
     }
-    sqlite3_backup_step(backup, -1);
-    sqlite3_backup_finish(backup);
     sqlite3_close(backupDB);
     std::filesystem::permissions(nstrPath,
         std::filesystem::perms::owner_read | std::filesystem::perms::owner_write,
@@ -111,7 +105,7 @@ void SqlitoSeguro::Database::backupDatabase()
 }
 
 /* actualizar para bind_int los ID */
-void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::string>& values)
+void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, std::string>& values, int usrid, int accid, std::optional<int> posid, std::optional<int>posaccid)
 {
     sqlite3_stmt* stmt = nullptr;
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
@@ -119,6 +113,13 @@ void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::s
     {
         std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
     }
+
+    if (posid.has_value() && posaccid.has_value())
+    {
+        sqlite3_bind_int(stmt, posid.value(), usrid);
+        sqlite3_bind_int(stmt, posaccid.value(), accid);
+    }
+    
     if (!values.empty())
     {
         for (auto const& [key, value]: values)
@@ -141,7 +142,43 @@ void SqlitoSeguro::Database::executeDML(std::string& query, std::map<int, std::s
     
 }
 
-std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::string& query, std::map<int, std::string>& values)
+void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, std::string>& values, std::optional<int> usrid, std::optional<int> posid)
+{
+    sqlite3_stmt* stmt = nullptr;
+    int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK)
+    {
+        std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+    }
+
+    if (posid.has_value())
+    {
+        sqlite3_bind_int(stmt, posid.value(), usrid.value());
+    }
+    
+    if (!values.empty())
+    {
+        for (auto const& [key, value]: values)
+        {
+            sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
+        }
+    }
+    rc = sqlite3_step(stmt);
+    
+    if (rc != SQLITE_DONE)
+    {
+        std::cerr << "ERROR AL EJECUTAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+        sqlite3_finalize(stmt);
+    }
+    else
+    {
+        std::cout << "consulta ejecutada exitosamente! " << "\n";
+        sqlite3_finalize(stmt);
+    }
+    
+}
+
+std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(const std::string& query, std::map<int, std::string>& values)
 {
     sqlite3_stmt* stmt = nullptr;
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
@@ -174,7 +211,7 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::
 }
 
 
-std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(std::string& query, int usrId, std::optional<int> accId)
+std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(const std::string& query, int usrId, std::optional<int> accId)
 {
     sqlite3_stmt* stmt = nullptr;
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
