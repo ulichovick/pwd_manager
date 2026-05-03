@@ -2,6 +2,7 @@
 #define USERS_H
 #include <iostream>
 #include "database.h"
+#include <optional>
 
 namespace SqlitoSeguro
 {
@@ -22,7 +23,7 @@ namespace SqlitoSeguro
                             m_contrasena(contrasena){};
 
             void createUser();
-            int Authenticate();
+            std::optional<int> Authenticate();
     };
 }
 

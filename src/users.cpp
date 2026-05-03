@@ -6,8 +6,14 @@
 #include <format>
 #include <vector>
 
+
 void SqlitoSeguro::userManager::createUser()
 {
+    if (m_usuario.empty() || m_contrasena.empty())
+    {
+        throw std::invalid_argument("invalid input");
+    }
+    
     std::string query {"INSERT INTO USERS (username, password, created_at) VALUES (?, ?, ?);"};
     const auto now = std::chrono::system_clock::now();
     auto floorTime {std::chrono::floor<std::chrono::seconds>(now)};
@@ -21,21 +27,26 @@ void SqlitoSeguro::userManager::createUser()
     db.executeDML(query, values);
 }
 
-int SqlitoSeguro::userManager::Authenticate()
+std::optional<int> SqlitoSeguro::userManager::Authenticate()
 {
     
-    std::string query {"SELECT id, username FROM users WHERE username=? AND password=?;"};
+    std::string query {"SELECT id, username, password FROM users WHERE username=?;"};
     std::map<int, std::string> values{
-        {1, m_usuario},
-        {2, m_contrasena}
+        {1, m_usuario}
     };
     std::map<int, std::vector<std::string>> res;
     res = db.executeDQL(query, values);
+    if (res.empty())
+        return std::nullopt;
     int usrId {};
+    std::string pwd {};
     for (const auto& [key, values] : res)
     {
         usrId = key;
-        std::cout << "bienvenido " << values[0] << "\n";
+        pwd = values[1];
     }
-    return usrId;
+    if (pwd == m_contrasena)
+        std::cout << "bienvenido " << values[0] << "\n";
+        return usrId;
+    return std::nullopt;
 }

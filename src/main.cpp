@@ -5,11 +5,12 @@
 #include "accounts.h"
 #include "users.h"
 #include "migracion.h"
+#include <optional>
 
 namespace SqlitoSeguro
 {
     struct session{
-        int userId;
+        std::optional<int> userId;
         int accId;
 
         bool isLogged() const
@@ -70,15 +71,15 @@ int main()
                 std::cin >> nombre;
                 std::cout << "introduzca la contraseña: " << "\n";
                 std::cin >> contrasena;
-                accs.addAccount(servicio, nombre, contrasena, currSess.userId);
+                accs.addAccount(servicio, nombre, contrasena, currSess.userId.value());
             }
             else
             {
-                accs.listAccounts(currSess.userId);
+                accs.listAccounts(currSess.userId.value());
                 std::cout << "Introduzca el ID de la cuenta de la que se quiere ver mas detalles: " << "\n";
                 std::cin >> elecc;
-                currSess.accId = accs.detailAccount(currSess.userId, elecc);
-                std::cout << "¿Desea realizar una acción relacionada a esta cue nta? (1=eliminar | 2=editar)" << "\n";
+                currSess.accId = accs.detailAccount(currSess.userId.value(), elecc);
+                std::cout << "¿Desea realizar una acción relacionada a esta cuenta? (1=eliminar | 2=editar)" << "\n";
                 std::cin >> elecc;
                 if (elecc==1)
                 {
@@ -86,7 +87,7 @@ int main()
                     std::cin >> elecc;
                     if (elecc=1)
                     {
-                        accs.deleteAccount(currSess.userId , currSess.accId);
+                        accs.deleteAccount(currSess.userId.value() , currSess.accId);
                     }
                 }
                 else if(elecc==2)
@@ -98,7 +99,7 @@ int main()
                     std::cin >> nombre;
                     std::cout << "introduzca la contraseña: " << "\n";
                     std::cin >> contrasena;
-                    accs.editAccount(servicio, nombre, contrasena, currSess.userId , currSess.accId);
+                    accs.editAccount(servicio, nombre, contrasena, currSess.userId.value() , currSess.accId);
                 }
             }
         }
