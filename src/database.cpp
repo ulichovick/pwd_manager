@@ -60,18 +60,18 @@ int SqlitoSeguro::Database::executeScalar(const std::string& query)
     sqlite3_stmt* stmt = nullptr;
     int rc;
     rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr );
-    if (rc != SQLITE_ROW)
+    if (rc != SQLITE_OK)
     {
         std::cerr << "Error executing Query: " << sqlite3_errmsg(db) << "\n";
     }
     rc = sqlite3_step(stmt);
-    
-    if (rc != SQLITE_ROW)
-    {
-        std::cerr << "Error executing Query: " << sqlite3_errmsg(db) << "\n";
-    }
     int res {};
-    res = sqlite3_column_int(stmt, 0);
+    if (rc == SQLITE_ROW)
+    {
+        
+        res = sqlite3_column_int(stmt, 0);
+    }
+    
     sqlite3_finalize(stmt);
     return res;
 }

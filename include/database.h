@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <map>
 #include <vector>
-
+#include <optional>
 
 namespace SqlitoSeguro
 {
