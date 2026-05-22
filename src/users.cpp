@@ -27,6 +27,7 @@ void SqlitoSeguro::userManager::createUser()
     db.executeDML(query, values);
 }
 
+/* actualizar para pasar como argumento usu y contrasena */
 std::optional<int> SqlitoSeguro::userManager::Authenticate()
 {
     

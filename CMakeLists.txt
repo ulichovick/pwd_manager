@@ -7,12 +7,26 @@ file(GLOB_RECURSE SOURCES
     src/*.cpp
 )
 
+include(FetchContent)
+
+FetchContent_Declare(
+    FLTK
+    GIT_REPOSITORY https://github.com/fltk/fltk.git
+    GIT_TAG release-1.4.4
+    GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(FLTK)
+
 add_subdirectory(third_party/sqlite)
 
 add_executable("pwd_manager" ${SOURCES})
 target_link_libraries("pwd_manager" PRIVATE sqlite3)
+target_link_libraries("pwd_manager" PRIVATE fltk::fltk)
 target_include_directories("pwd_manager" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 target_compile_features("pwd_manager" PRIVATE cxx_std_23)
+
+
 
 #[===[
 add_custom_command(
