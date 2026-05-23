@@ -1,7 +1,5 @@
 #include "sqlite3.h"
 #include "database.h"
-#include "accounts.h"
-#include "users.h"
 #include "migracion.h"
 #include <chrono>
 #include <filesystem>
@@ -180,15 +178,21 @@ void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, 
 
 std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(const std::string& query, std::map<int, std::string>& values)
 {
+    std::cout << "DB pointer: " << db << "\n";
     sqlite3_stmt* stmt = nullptr;
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK)
     {
         std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+        std::cerr << "Prepare rc: " << rc << "\n";
     }
     for (auto const& [key, value]: values)
     {
         sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
+        if (rc != SQLITE_OK)
+        {
+            std::cerr << "Bind error: " << sqlite3_errmsg(db) << "\n";
+        }
     }
 
     int id;

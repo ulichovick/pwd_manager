@@ -11,19 +11,12 @@ namespace SqlitoSeguro
         
         private:
             Database& db;
-            std::string m_usuario;
-            std::string m_contrasena;
-
         public:
             //constructor
-            userManager(Database& database, 
-                        std::string_view usuario, 
-                        std::string_view contrasena): db(database),
-                            m_usuario(usuario),
-                            m_contrasena(contrasena){};
+            userManager(Database& database): db(database){};
 
-            void createUser();
-            std::optional<int> Authenticate();
+            void createUser(std::string username, std::string password);
+            std::optional<int> Authenticate(std::string& username, std::string& password);
     };
 }
 

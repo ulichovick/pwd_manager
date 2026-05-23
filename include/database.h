@@ -14,7 +14,7 @@ namespace SqlitoSeguro
     class Database
     {
         private: 
-            sqlite3* db = nullptr;
+            sqlite3* db;
             const std::filesystem::path m_path;
 
         public:

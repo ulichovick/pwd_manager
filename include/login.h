@@ -9,9 +9,10 @@
 #include <FL/Fl_Secret_Input.H>
 #include "users.h"
 
+
 namespace SqlitoSeguro
 {
-    class login
+    class loginWindow
     {
         Fl_Window* window;
 
@@ -25,10 +26,8 @@ namespace SqlitoSeguro
         void handleLogin();
 
     public:
-        login(SqlitoSeguro::userManager& um);
+        loginWindow(SqlitoSeguro::userManager& um);
         void show();
-        ~login();
-        
     };
     
 }
