@@ -30,6 +30,7 @@ namespace SqlitoSeguro
 
 int main()
 {
+    sqlite3_config(SQLITE_CONFIG_SERIALIZED);
     try
     {
         const char* home {std::getenv("HOME")};
@@ -46,6 +47,7 @@ int main()
 
         SqlitoSeguro::loginWindow loginWind(usrs);
         loginWind.show();
+        return Fl::run();
 
     }
     catch(const std::exception& e)
@@ -54,5 +56,5 @@ int main()
         return 1;
     }
 
-    return Fl::run();
+    
 }

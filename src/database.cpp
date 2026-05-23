@@ -183,12 +183,19 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(const
     
     std::cout << "DB pointer: " << db << "\n";
     sqlite3_stmt* stmt = nullptr;
+    if (db == nullptr) {
+    {
+        std::cerr << "CRITICAL: Database pointer is NULL inside executeDQL!\n";
+        return {};
+    }
+}
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     std::cout << "DB in query: " << db << "\n";
     if (rc != SQLITE_OK)
     {
         std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
         std::cerr << "Prepare rc: " << rc << "\n";
+        sqlite3_finalize(stmt);
         return {};
     }
     for (auto const& [key, value]: values)
