@@ -21,7 +21,7 @@ SqlitoSeguro::Database::Database(const std::filesystem::path& path) : m_path(pat
     bool isNew = !std::filesystem::exists(dbPath);
 
     int rc = sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-
+    std::cout << "DB in main: " << db << "\n";
     if (rc != SQLITE_OK)
     {
         std::string err = sqlite3_errmsg(db);
@@ -61,6 +61,8 @@ int SqlitoSeguro::Database::executeScalar(const std::string& query)
     if (rc != SQLITE_OK)
     {
         std::cerr << "Error executing Query: " << sqlite3_errmsg(db) << "\n";
+        sqlite3_finalize(stmt);
+        return{};
     }
     rc = sqlite3_step(stmt);
     int res {};
@@ -178,19 +180,23 @@ void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, 
 
 std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(const std::string& query, std::map<int, std::string>& values)
 {
+    
     std::cout << "DB pointer: " << db << "\n";
     sqlite3_stmt* stmt = nullptr;
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    std::cout << "DB in query: " << db << "\n";
     if (rc != SQLITE_OK)
     {
         std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
         std::cerr << "Prepare rc: " << rc << "\n";
+        return {};
     }
     for (auto const& [key, value]: values)
     {
-        sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
-        if (rc != SQLITE_OK)
+        int bind_rc = sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_TRANSIENT);
+        if (bind_rc != SQLITE_OK)
         {
+            sqlite3_finalize(stmt);
             std::cerr << "Bind error: " << sqlite3_errmsg(db) << "\n";
         }
     }
