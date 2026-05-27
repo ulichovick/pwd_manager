@@ -1,5 +1,5 @@
-#ifndef LOGIN_H
-#define LOGIN_H
+#ifndef ACCOUNTS_WINDOW_H
+#define ACCOUNTS_WINDOW_H
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
@@ -7,13 +7,12 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Secret_Input.H>
-#include "users.h"
 #include "accounts.h"
 
 
 namespace SqlitoSeguro
 {
-    class loginWindow
+    class accountsWindow
     {
         Fl_Window* window;
 
@@ -22,13 +21,11 @@ namespace SqlitoSeguro
         Fl_Button* loginButton;
         Fl_Box* statusLabel;
 
-        SqlitoSeguro::userManager& userManager;
-        SqlitoSeguro::accountManager& accountManager;
-        static void onLogin(Fl_Widget*, void* data);
-        void handleLogin();
+        SqlitoSeguro::accountManager & accountManager;
+        int uid;
 
     public:
-        loginWindow(SqlitoSeguro::userManager& um, SqlitoSeguro::accountManager& am);
+        accountsWindow(SqlitoSeguro::accountManager& am, int uid);
         void show();
     };
     

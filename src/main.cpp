@@ -45,7 +45,7 @@ int main()
         SqlitoSeguro::userManager usrs(db1);
         SqlitoSeguro::accountManager accs(db1);
 
-        SqlitoSeguro::loginWindow loginWind(usrs);
+        SqlitoSeguro::loginWindow loginWind(usrs, accs);
         loginWind.show();
         return Fl::run();
 

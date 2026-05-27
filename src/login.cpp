@@ -7,7 +7,9 @@
 #include <FL/Fl_Secret_Input.H>
 #include "users.h"
 
-SqlitoSeguro::loginWindow::loginWindow(SqlitoSeguro::userManager& um): userManager(um)
+#include "accounts_window.h"
+
+SqlitoSeguro::loginWindow::loginWindow(SqlitoSeguro::userManager& um, SqlitoSeguro::accountManager& am): userManager(um), accountManager(am)
 {
     window = new Fl_Window(300, 200, "Login");
 
@@ -36,7 +38,9 @@ void SqlitoSeguro::loginWindow::handleLogin()
         auto userId = userManager.Authenticate(username, password);
         if (userId)
         {
-            statusLabel->label("Login Successful!!");
+            window->hide();
+            auto* accWin = new SqlitoSeguro::accountsWindow(accountManager, *userId);
+            accWin->show();
         }
         else
         {
