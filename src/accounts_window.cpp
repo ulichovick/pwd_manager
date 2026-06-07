@@ -11,14 +11,22 @@ SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, i
 {
     window = new Fl_Window(300, 200, "Accounts");
 
-    usernameInput = new Fl_Input(100, 30, 150, 25, "Username:");
-    passwordInput = new Fl_Secret_Input(100, 70, 150, 25, "Password:");
-    loginButton = new Fl_Button(100, 110, 80, 30, "Login");
-    statusLabel = new Fl_Box(50, 150, 200, 25, "");
+    statusLabel = new Fl_Box(50, 30, 200, 25, "Cuentas");
 
 }
 void SqlitoSeguro::accountsWindow::show()
 {
     window->end();
+    
+    auto accounts = accountManager.listAccounts(uid);
+    
+    for (const auto& [key, values] : accounts)
+    {
+        std::cout << key << "\t" << values[0] << "\n";
+        std::string val = values[0];
+        statusLabel->label(val.c_str());
+        statusLabel->redraw();
+    }
     window->show();
+    
 }
