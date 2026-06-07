@@ -25,6 +25,8 @@ username(username)
 void SqlitoSeguro::accountsWindow::show()
 {
     window->end();
+
+    //actualizar a Fl_Hold_Browser
     
     scroll_container->clear();
     scroll_container->begin();
