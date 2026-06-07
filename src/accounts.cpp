@@ -29,7 +29,9 @@ void SqlitoSeguro::accountManager::addAccount(const std::string& service,
 std::map<int, std::vector<std::string>> SqlitoSeguro::accountManager::listAccounts(int usrId)
 {
     std::string query {"SELECT id, service FROM accounts WHERE user_id=?;"};
+
     std::map<int, std::vector<std::string>> res;
+    res = db.executeDQL(query, usrId);
     return res;
 }
 

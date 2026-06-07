@@ -39,7 +39,7 @@ void SqlitoSeguro::loginWindow::handleLogin()
         if (userId)
         {
             window->hide();
-            auto* accWin = new SqlitoSeguro::accountsWindow(accountManager, *userId);
+            auto* accWin = new SqlitoSeguro::accountsWindow(accountManager, *userId, username);
             accWin->show();
         }
         else

@@ -47,7 +47,6 @@ std::optional<int> SqlitoSeguro::userManager::Authenticate(std::string& username
     }
     if (pwd == password)
     {
-        std::cout << "bienvenido " << values[0] << "\n";
         return usrId;
     }
     return std::nullopt;
