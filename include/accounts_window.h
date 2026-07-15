@@ -26,9 +26,11 @@ namespace SqlitoSeguro
         SqlitoSeguro::accountManager & accountManager;
         int uid;
         std::string username;
+        static void browser_callback(Fl_Widget* widget, void* data);
 
     public:
         accountsWindow(SqlitoSeguro::accountManager& am, int uid, std::string_view username);
+        
         void show();
     };
     

@@ -5,6 +5,7 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Secret_Input.H>
+#include <FL/Fl_Hold_Browser.H>
 #include "accounts.h"
 
 SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, int uid, std::string_view username): 
@@ -22,6 +23,7 @@ username(username)
     scroll_container->type(Fl_Scroll::VERTICAL);
 
 }
+
 void SqlitoSeguro::accountsWindow::show()
 {
     window->end();
@@ -39,17 +41,25 @@ void SqlitoSeguro::accountsWindow::show()
     int current_y = start_y;
 
     auto accounts = accountManager.listAccounts(uid);
-    
+    Fl_Box* box = new Fl_Box(20, 20, 360, 20, "Cuentas");
+    box->box(FL_UP_BOX);
+    Fl_Hold_Browser* label_box = new Fl_Hold_Browser(start_x, current_y, label_w, label_h+50);
     for (const auto& [key, values] : accounts)
     {
         std::cout << key << "\t" << values[0] << "\n";
         std::string val = values[0];
-        Fl_Box* label_box = new Fl_Box(start_x, current_y, label_w, label_h);
-        label_box->copy_label(val.c_str());
+        
+        label_box->add(val.c_str());
         current_y += label_h + spacing;
     }
+    label_box->callback(browser_callback, this);
     scroll_container->end();
     scroll_container->redraw();
     window->show();
     
+}
+
+void SqlitoSeguro::accountsWindow::browser_callback(Fl_Widget* widget, void* data) {
+    Fl_Hold_Browser* browser = (Fl_Hold_Browser*)widget;
+    std::cout << "Cuenta seleccionada: " << browser->text(browser->value());
 }
