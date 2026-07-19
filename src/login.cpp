@@ -40,7 +40,6 @@ void SqlitoSeguro::loginWindow::handleLogin()
         {
             window->hide();
             auto* accWin = new SqlitoSeguro::accountsWindow(accountManager, *userId, username);
-            accWin->show();
         }
         else
         {
