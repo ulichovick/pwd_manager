@@ -35,6 +35,12 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
     urlOutput =
         new Fl_Output(350,160,500,25,"URL:");
 
+    static outputs outs;
+    outs.nameOutput = nameOutput;
+    outs.usernameOutput = usernameOutput;
+    outs.passwordOutput = passwordOutput;
+    outs.urlOutput = urlOutput;
+
     addButton =
         new Fl_Button(10,550,90,30,"Add");
 
@@ -62,6 +68,21 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
         std::string val = values[0];
         browser->add(val.c_str());
     }
+    browser->callback(browser_callback, &outs);
+    browser->when(FL_WHEN_CHANGED); 
 
     window->show();
+}
+
+void SqlitoSeguro::accountsWindowtest::browser_callback(Fl_Widget* widget, void* data) {
+    Fl_Hold_Browser* browser = (Fl_Hold_Browser*)widget;
+    std::string cuenta = browser->text(browser->value());
+    outputs *outs = (outputs *)data;
+    //cuenta.erase(0,2);
+    browser->copy_label(cuenta.c_str());
+
+    outs->nameOutput->value(cuenta.c_str());
+    outs->usernameOutput->value("test1");
+    outs->passwordOutput->value("test2");
+    outs->urlOutput->value("test3");
 }
