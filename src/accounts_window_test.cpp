@@ -78,8 +78,6 @@ void SqlitoSeguro::accountsWindowtest::browser_callback(Fl_Widget* widget, void*
     Fl_Hold_Browser* browser = (Fl_Hold_Browser*)widget;
     std::string cuenta = browser->text(browser->value());
     outputs *outs = (outputs *)data;
-    //cuenta.erase(0,2);
-    browser->copy_label(cuenta.c_str());
 
     outs->nameOutput->value(cuenta.c_str());
     outs->usernameOutput->value("test1");
