@@ -33,6 +33,7 @@ namespace SqlitoSeguro
         Fl_Output* usernameOutput;
         Fl_Output* passwordOutput;
         Fl_Output* urlOutput;
+        int uid;
         };
 
         SqlitoSeguro::accountManager & accountManager;

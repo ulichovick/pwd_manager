@@ -35,23 +35,20 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::accountManager::listAccoun
     return res;
 }
 
-int SqlitoSeguro::accountManager::detailAccount(int usrId, int accId)
+std::vector<std::string> SqlitoSeguro::accountManager::detailAccount(int usrId, int accId)
 {
-    std::string query {"SELECT id, service, login, password, created_at  FROM accounts WHERE user_id=? AND id=?;"};
+    std::string query {"SELECT id, service, login, password, created_at FROM accounts WHERE user_id=? AND id=?;"};
     std::map<int, std::vector<std::string>> res;
     res = db.executeDQL(query, usrId, accId);
-    int tmp {};
-    std::cout << "ID" << "\t" << "Nombre" << "\t" << "Username" << "\t" << "Contraseña" << "\t" << "Fecha de creación" << "\t" << "\n";
+    std::vector<std::string> details;
     for (const auto& [key, values] : res)
     {
-        tmp = key;
         for (const auto& cuenta : values)
         {
-            std::cout << cuenta << "\t";
+            details.push_back(cuenta);
         }
     }
-    std::cout << "\n";
-    return tmp;
+    return details;
 }
 
 void SqlitoSeguro::accountManager::deleteAccount(int usrId, int accId)

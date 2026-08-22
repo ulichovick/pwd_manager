@@ -40,6 +40,7 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
     outs.usernameOutput = usernameOutput;
     outs.passwordOutput = passwordOutput;
     outs.urlOutput = urlOutput;
+    outs.uid = uid;
 
     addButton =
         new Fl_Button(10,550,90,30,"Add");
@@ -66,7 +67,7 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
     for (const auto& [key, values] : accounts)
     {
         std::string val = values[0];
-        browser->add(val.c_str());
+        browser->add(val.c_str(), (void*)(intptr_t)key);
     }
     browser->callback(browser_callback, &outs);
     browser->when(FL_WHEN_CHANGED); 
@@ -74,13 +75,24 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
     window->show();
 }
 
+//arreglar el detallar cuenta, el return
+
 void SqlitoSeguro::accountsWindowtest::browser_callback(Fl_Widget* widget, void* data) {
     Fl_Hold_Browser* browser = (Fl_Hold_Browser*)widget;
     std::string cuenta = browser->text(browser->value());
     outputs *outs = (outputs *)data;
+    SqlitoSeguro::accountManager *accDetails = (SqlitoSeguro::accountManager *)data;
 
-    outs->nameOutput->value(cuenta.c_str());
-    outs->usernameOutput->value("test1");
-    outs->passwordOutput->value("test2");
-    outs->urlOutput->value("test3");
+    int line = browser->value();
+    int id;
+    if (line > 0) 
+    {
+        id = (int)(intptr_t)browser->data(line);
+    }
+    
+    std::vector<std::string> currAccount {accDetails->detailAccount(outs->uid, id)};
+    outs->nameOutput->value(currAccount[0].c_str());
+    outs->usernameOutput->value(currAccount[1].c_str());
+    outs->passwordOutput->value(currAccount[2].c_str());
+    outs->urlOutput->value(currAccount[3].c_str());
 }
