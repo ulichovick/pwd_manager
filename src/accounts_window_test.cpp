@@ -20,38 +20,38 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
     browser = new Fl_Hold_Browser(
         10, 40,
         250, 500,
-        "Accounts");
+        "Cuentas");
     browser->align(FL_ALIGN_TOP);
 
     nameOutput =
-        new Fl_Output(350,40,500,25,"Service:");
+        new Fl_Output(350,40,500,25,"Servicio:");
 
     usernameOutput =
-        new Fl_Output(350,80,500,25,"Username:");
+        new Fl_Output(350,80,500,25,"Usuario:");
 
     passwordOutput =
-        new Fl_Output(350,120,500,25,"Password:");
+        new Fl_Output(350,120,500,25,"Contraseña:");
 
     urlOutput =
         new Fl_Output(350,160,500,25,"URL:");
 
     addButton =
-        new Fl_Button(10,550,90,30,"Add");
+        new Fl_Button(10,550,90,30,"Agregar");
 
     editButton =
-        new Fl_Button(110,550,90,30,"Edit");
+        new Fl_Button(110,550,90,30,"Editar");
 
     deleteButton =
-        new Fl_Button(210,550,90,30,"Delete");
+        new Fl_Button(210,550,90,30,"Borrar");
 
     copyUserButton =
-        new Fl_Button(430,550,110,30,"Copy User");
+        new Fl_Button(430,550,110,30,"Copiar Usu");
 
     copyPassButton =
-        new Fl_Button(550,550,110,30,"Copy Pass");
+        new Fl_Button(550,550,110,30,"Copiar Contra");
 
     logoutButton =
-        new Fl_Button(760,550,120,30,"Logout");
+        new Fl_Button(760,550,120,30,"Salir");
 
     auto accounts = accountManager.listAccounts(uid);
 
