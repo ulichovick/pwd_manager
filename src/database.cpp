@@ -180,15 +180,14 @@ void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, 
 
 std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(const std::string& query, std::map<int, std::string>& values)
 {
-    
-    std::cout << "DB pointer: " << db << "\n";
     sqlite3_stmt* stmt = nullptr;
-    if (db == nullptr) {
+    std::cout << "DB pointer: " << db << "\n";
+    if (db == nullptr)
     {
         std::cerr << "CRITICAL: Database pointer is NULL inside executeDQL!\n";
+        sqlite3_finalize(stmt);
         return {};
     }
-}
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     std::cout << "DB in query: " << db << "\n";
     if (rc != SQLITE_OK)
@@ -231,10 +230,20 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(const
 std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(const std::string& query, int usrId, std::optional<int> accId)
 {
     sqlite3_stmt* stmt = nullptr;
+    //std::cout << "DB pointer: " << db << "\n";
+    if (db == nullptr)
+    {
+        std::cerr << "CRITICAL: Database pointer is NULL inside executeDQL!\n";
+        sqlite3_finalize(stmt);
+        return {};
+    }
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK)
     {
         std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+        std::cerr << "Prepare rc: " << rc << "\n";
+        sqlite3_finalize(stmt);
+        return {};
     }
     
     sqlite3_bind_int(stmt, 1, usrId);
@@ -255,6 +264,7 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(const
             for (size_t i = 0; i < cols; i++)
             {
                 const unsigned char* cell = sqlite3_column_text(stmt, i);
+                
                 std::string strCell = reinterpret_cast<const char*>(cell);
                 row.push_back(strCell);
             }

@@ -28,18 +28,11 @@ namespace SqlitoSeguro
         Fl_Button* copyPassButton;
         Fl_Button* logoutButton;
 
-        struct outputs{
-        Fl_Output* nameOutput;
-        Fl_Output* usernameOutput;
-        Fl_Output* passwordOutput;
-        Fl_Output* urlOutput;
-        int uid;
-        };
-
         SqlitoSeguro::accountManager & accountManager;
         int uid;
         std::string username;
         static void browser_callback(Fl_Widget* widget, void* data);
+        std::vector<std::string> detailCurrAccount(int uid, int id);
 
     public:
         accountsWindowtest(SqlitoSeguro::accountManager& am, int uid, std::string_view username);

@@ -24,7 +24,7 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
     browser->align(FL_ALIGN_TOP);
 
     nameOutput =
-        new Fl_Output(350,40,500,25,"Name:");
+        new Fl_Output(350,40,500,25,"Service:");
 
     usernameOutput =
         new Fl_Output(350,80,500,25,"Username:");
@@ -34,13 +34,6 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
 
     urlOutput =
         new Fl_Output(350,160,500,25,"URL:");
-
-    static outputs outs;
-    outs.nameOutput = nameOutput;
-    outs.usernameOutput = usernameOutput;
-    outs.passwordOutput = passwordOutput;
-    outs.urlOutput = urlOutput;
-    outs.uid = uid;
 
     addButton =
         new Fl_Button(10,550,90,30,"Add");
@@ -69,7 +62,7 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
         std::string val = values[0];
         browser->add(val.c_str(), (void*)(intptr_t)key);
     }
-    browser->callback(browser_callback, &outs);
+    browser->callback(browser_callback, this);
     browser->when(FL_WHEN_CHANGED); 
 
     window->show();
@@ -80,8 +73,7 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
 void SqlitoSeguro::accountsWindowtest::browser_callback(Fl_Widget* widget, void* data) {
     Fl_Hold_Browser* browser = (Fl_Hold_Browser*)widget;
     std::string cuenta = browser->text(browser->value());
-    outputs *outs = (outputs *)data;
-    SqlitoSeguro::accountManager *accDetails = (SqlitoSeguro::accountManager *)data;
+
 
     int line = browser->value();
     int id;
@@ -89,10 +81,21 @@ void SqlitoSeguro::accountsWindowtest::browser_callback(Fl_Widget* widget, void*
     {
         id = (int)(intptr_t)browser->data(line);
     }
+
+    auto* self = static_cast<accountsWindowtest*>(data);
+    std::vector<std::string> currAccount = self->detailCurrAccount(self->uid, id);
+    if (currAccount.size() < 4)
+        return;
+    self->nameOutput->value(currAccount[1].c_str());
+    self->usernameOutput->value(currAccount[2].c_str());
+    self->passwordOutput->value(currAccount[3].c_str());
+    self->urlOutput->value(currAccount[4].c_str());
+}
+
+std::vector<std::string> SqlitoSeguro::accountsWindowtest::detailCurrAccount(int usid,int id)
+{
     
-    std::vector<std::string> currAccount {accDetails->detailAccount(outs->uid, id)};
-    outs->nameOutput->value(currAccount[0].c_str());
-    outs->usernameOutput->value(currAccount[1].c_str());
-    outs->passwordOutput->value(currAccount[2].c_str());
-    outs->urlOutput->value(currAccount[3].c_str());
+    std::vector<std::string> currAccount {accountManager.detailAccount(usid, id)};
+
+    return currAccount;
 }
