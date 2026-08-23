@@ -62,7 +62,10 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
         std::string val = values[0];
         browser->add(val.c_str(), (void*)(intptr_t)key);
     }
+
     browser->callback(browser_callback, this);
+    addButton->callback(addAccountWind, this);
+
     browser->when(FL_WHEN_CHANGED); 
 
     window->show();
@@ -98,4 +101,29 @@ std::vector<std::string> SqlitoSeguro::accountsWindowtest::detailCurrAccount(int
     std::vector<std::string> currAccount {accountManager.detailAccount(usid, id)};
 
     return currAccount;
+}
+
+void SqlitoSeguro::accountsWindowtest::addAccountWind(Fl_Widget* widget, void* data)
+{
+    Fl_Window* win = (Fl_Window*)data;
+    win->begin();
+    Fl_Window* dlg = new Fl_Window(300, 150, "Add/Edit Account");
+    Fl_Button* close_btn = new Fl_Button(60, 60, 80, 25, "Close");
+    close_btn->callback(close_dialog_cb, dlg);
+
+    dlg->end();
+    win->end();
+
+    dlg->set_modal();
+    dlg->show();
+    while (dlg->shown()) 
+    {
+        Fl::wait();
+    }
+    delete dlg;
+}
+
+void SqlitoSeguro::accountsWindowtest::close_dialog_cb(Fl_Widget* w, void* data) {
+    Fl_Window* dialog = (Fl_Window*)data;
+    dialog->hide(); 
 }

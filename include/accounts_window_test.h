@@ -32,6 +32,9 @@ namespace SqlitoSeguro
         int uid;
         std::string username;
         static void browser_callback(Fl_Widget* widget, void* data);
+        static void addAccountWind(Fl_Widget* widget, void* data);
+        static void close_dialog_cb(Fl_Widget* w, void* data);
+
         std::vector<std::string> detailCurrAccount(int uid, int id);
 
     public:
