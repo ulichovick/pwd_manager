@@ -1,77 +1,134 @@
 #include "accounts_window.h"
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
-#include <FL/Fl_Box.H>
+#include <FL/Fl_Multiline_Output.H>
 #include <FL/Fl_Button.H>
-#include <FL/Fl_Input.H>
-#include <FL/Fl_Secret_Input.H>
+#include <FL/Fl_Output.H>
 #include <FL/Fl_Hold_Browser.H>
 #include "accounts.h"
+#include "account_form_window.h"
 
-SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, int uid, std::string_view username): 
-accountManager(am), 
-uid(uid),
-username(username)
+SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, int uid, std::string_view username):
+    accountManager(am),
+    uid(uid),
+    username(username)
 {
     std::string usu {"Cuentas de "};
     usu = usu + std::string(username);
-    window = new Fl_Window(800, 250);
+    window = new Fl_Window(900, 600);
     window->copy_label(usu.c_str());
 
-    Fl_Box* dets = new Fl_Box(150, 30, 100, 20, "Make a selection");
-    dets->box(FL_UP_BOX); // Give it a visible box border
-    dets->align(FL_ALIGN_CENTER);
+    browser = new Fl_Hold_Browser(
+        10, 40,
+        250, 500,
+        "Cuentas");
+    browser->align(FL_ALIGN_TOP);
 
-    scroll_container = new Fl_Scroll(25, 30, 100, 200);
-    scroll_container->box(FL_DOWN_BOX);
-    scroll_container->type(Fl_Scroll::VERTICAL);
+    nameOutput =
+        new Fl_Output(350,40,500,25,"Servicio:");
 
-    
+    usernameOutput =
+        new Fl_Output(350,80,500,25,"Usuario:");
+
+    passwordOutput =
+        new Fl_Output(350,120,500,25,"Contraseña:");
+
+    urlOutput =
+        new Fl_Output(350,160,500,25,"URL:");
+
+    addButton =
+        new Fl_Button(10,550,90,30,"Agregar");
+
+    editButton =
+        new Fl_Button(110,550,90,30,"Editar");
+
+    deleteButton =
+        new Fl_Button(210,550,90,30,"Borrar");
+
+    copyUserButton =
+        new Fl_Button(430,550,110,30,"Copiar Usu");
+
+    copyPassButton =
+        new Fl_Button(550,550,110,30,"Copiar Contra");
+
+    logoutButton =
+        new Fl_Button(760,550,120,30,"Salir");
+
+    auto accounts = accountManager.listAccounts(uid);
 
     window->end();
 
-    //actualizar a Fl_Hold_Browser
-
-    scroll_container->clear();
-    scroll_container->begin();
-    int start_x = scroll_container->x();
-    int start_y = scroll_container->y() + 20;
-    int label_w = scroll_container->w();
-    int label_h = 25;
-    int spacing = 5;
-    
-    int current_y = start_y;
-
-    auto accounts = accountManager.listAccounts(uid);
-    Fl_Box* box = new Fl_Box(20, 32, 110, 20, "Cuentas");
-    box->box(FL_UP_BOX);
-
-    Fl_Hold_Browser* label_box = new Fl_Hold_Browser(start_x, current_y, label_w, label_h+50);
-    label_box->color(FL_GRAY);
     for (const auto& [key, values] : accounts)
     {
         std::string val = values[0];
-        std::string cen_itm = "@c" + val;
-        label_box->add(cen_itm.c_str());
-        current_y += label_h + spacing;
+        browser->add(val.c_str(), (void*)(intptr_t)key);
     }
-    scroll_container->end();
-    scroll_container->redraw();
-    label_box->callback(browser_callback, dets);
-    label_box->when(FL_WHEN_CHANGED); 
-    
+
+    browser->callback(browser_callback, this);
+    addButton->callback(addAccountWind, this);
+
+    browser->when(FL_WHEN_CHANGED); 
+
     window->show();
-
-
 }
+
+//arreglar el detallar cuenta, el return
 
 void SqlitoSeguro::accountsWindow::browser_callback(Fl_Widget* widget, void* data) {
     Fl_Hold_Browser* browser = (Fl_Hold_Browser*)widget;
-    Fl_Box* target_box = (Fl_Box*)data;
-    std::string cuenta = browser->text(browser->value());
-    cuenta.erase(0,2);
-    browser->copy_label(cuenta.c_str());
+    auto* self = static_cast<accountsWindow*>(data);
 
-    target_box->copy_label("test");
-    target_box->redraw(); 
+    int line = browser->value();
+    //int id;
+    if (line <= 0)
+        return;
+
+    auto dataPtr = browser->data(line);
+    if (dataPtr == nullptr)
+        return;
+
+    // id = (int)(intptr_t)browser->data(line);
+    int id = static_cast<int>(
+        reinterpret_cast<intptr_t>(dataPtr)
+    );
+
+    std::vector<std::string> currAccount = self->accountManager.detailAccount(self->uid, id);
+    if (currAccount.size() < 4)
+        return;
+    self->nameOutput->value(currAccount[1].c_str());
+    self->usernameOutput->value(currAccount[2].c_str());
+    self->passwordOutput->value(currAccount[3].c_str());
+    self->urlOutput->value(currAccount[4].c_str());
+}
+
+void SqlitoSeguro::accountsWindow::addAccountWind(Fl_Widget* widget, void* data)
+{
+    auto* self = static_cast<accountsWindow*>(data);
+
+    self->newAccount = std::make_unique<SqlitoSeguro::AccountFormWindow>(
+        self->accountManager,
+        self->uid
+    );
+    self->newAccount->show();
+    /*
+    Fl_Window* dlg = new Fl_Window(900, 600, "Add/Edit Account");
+    Fl_Button* close_btn = new Fl_Button(60, 60, 80, 25, "Close");
+    close_btn->callback(close_dialog_cb, dlg);
+
+    dlg->end();
+    win->end();
+
+    dlg->set_modal();
+    dlg->show();
+    while (dlg->shown()) 
+    {
+        Fl::wait();
+    }
+    delete dlg;
+    */
+}
+
+void SqlitoSeguro::accountsWindow::close_dialog_cb(Fl_Widget* w, void* data) {
+    Fl_Window* dialog = (Fl_Window*)data;
+    dialog->hide(); 
 }

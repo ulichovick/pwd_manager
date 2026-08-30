@@ -7,7 +7,7 @@
 #include <FL/Fl_Secret_Input.H>
 #include "users.h"
 
-#include "accounts_window_test.h"
+#include "accounts_window.h"
 
 SqlitoSeguro::loginWindow::loginWindow(SqlitoSeguro::userManager& um, SqlitoSeguro::accountManager& am): userManager(um), accountManager(am)
 {
@@ -39,7 +39,7 @@ void SqlitoSeguro::loginWindow::handleLogin()
         if (userId)
         {
             window->hide();
-            auto* accWin = new SqlitoSeguro::accountsWindowtest(accountManager, *userId, username);
+            auto* accWin = new SqlitoSeguro::accountsWindow(accountManager, *userId, username);
         }
         else
         {
