@@ -30,7 +30,7 @@ namespace SqlitoSeguro
         Fl_Button* cancelButton;
 
         //static void onSave(Fl_Widget*, void* data);
-        //static void onCancel(Fl_Widget*, void* data);
+        static void onCancel(Fl_Widget*, void* data);
         void handleSave();
         void handleCancel();
 

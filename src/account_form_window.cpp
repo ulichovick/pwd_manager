@@ -57,7 +57,7 @@ SqlitoSeguro::AccountFormWindow::AccountFormWindow(SqlitoSeguro::accountManager&
         );
 
     //saveButton->callback(onSave, this);
-    //cancelButton->callback(onCancel, this);
+    cancelButton->callback(onCancel, this);
 
     window->end();
 }
@@ -66,4 +66,14 @@ void SqlitoSeguro::AccountFormWindow::show()
 {
     window->set_modal();
     window->show();
+}
+
+void SqlitoSeguro::AccountFormWindow::onCancel(
+    Fl_Widget*,
+    void* data)
+{
+    auto* self =
+        static_cast<AccountFormWindow*>(data);
+
+    self->window->hide();
 }
