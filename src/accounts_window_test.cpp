@@ -6,6 +6,7 @@
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Hold_Browser.H>
 #include "accounts.h"
+#include "account_form_window.h"
 
 SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManager& am, int uid, std::string_view username):
     accountManager(am),
@@ -75,18 +76,23 @@ SqlitoSeguro::accountsWindowtest::accountsWindowtest(SqlitoSeguro::accountManage
 
 void SqlitoSeguro::accountsWindowtest::browser_callback(Fl_Widget* widget, void* data) {
     Fl_Hold_Browser* browser = (Fl_Hold_Browser*)widget;
-    std::string cuenta = browser->text(browser->value());
-
+    auto* self = static_cast<accountsWindowtest*>(data);
 
     int line = browser->value();
-    int id;
-    if (line > 0) 
-    {
-        id = (int)(intptr_t)browser->data(line);
-    }
+    //int id;
+    if (line <= 0)
+        return;
 
-    auto* self = static_cast<accountsWindowtest*>(data);
-    std::vector<std::string> currAccount = self->detailCurrAccount(self->uid, id);
+    auto dataPtr = browser->data(line);
+    if (dataPtr == nullptr)
+        return;
+
+    // id = (int)(intptr_t)browser->data(line);
+    int id = static_cast<int>(
+        reinterpret_cast<intptr_t>(dataPtr)
+    );
+
+    std::vector<std::string> currAccount = self->accountManager.detailAccount(self->uid, id);
     if (currAccount.size() < 4)
         return;
     self->nameOutput->value(currAccount[1].c_str());
@@ -95,19 +101,17 @@ void SqlitoSeguro::accountsWindowtest::browser_callback(Fl_Widget* widget, void*
     self->urlOutput->value(currAccount[4].c_str());
 }
 
-std::vector<std::string> SqlitoSeguro::accountsWindowtest::detailCurrAccount(int usid,int id)
-{
-    
-    std::vector<std::string> currAccount {accountManager.detailAccount(usid, id)};
-
-    return currAccount;
-}
-
 void SqlitoSeguro::accountsWindowtest::addAccountWind(Fl_Widget* widget, void* data)
 {
-    Fl_Window* win = (Fl_Window*)data;
-    win->begin();
-    Fl_Window* dlg = new Fl_Window(300, 150, "Add/Edit Account");
+    auto* self = static_cast<accountsWindowtest*>(data);
+
+    self->newAccount = std::make_unique<SqlitoSeguro::AccountFormWindow>(
+        self->accountManager,
+        self->uid
+    );
+    self->newAccount->show();
+    /*
+    Fl_Window* dlg = new Fl_Window(900, 600, "Add/Edit Account");
     Fl_Button* close_btn = new Fl_Button(60, 60, 80, 25, "Close");
     close_btn->callback(close_dialog_cb, dlg);
 
@@ -121,6 +125,7 @@ void SqlitoSeguro::accountsWindowtest::addAccountWind(Fl_Widget* widget, void* d
         Fl::wait();
     }
     delete dlg;
+    */
 }
 
 void SqlitoSeguro::accountsWindowtest::close_dialog_cb(Fl_Widget* w, void* data) {

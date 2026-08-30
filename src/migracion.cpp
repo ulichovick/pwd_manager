@@ -12,10 +12,6 @@ void SqlitoSeguro::migrationManager::initialize()
         int newVer {this->setSchemaVersion(1)};
         db.backupDatabase();
     }
-    else
-    {
-        std::cout << "Database found, opening!..." << "\n";
-    }
 }
 
 /* cambiar la columna created_at a last_updated */
