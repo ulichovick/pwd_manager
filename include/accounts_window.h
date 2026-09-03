@@ -8,6 +8,7 @@
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Hold_Browser.H>
 #include "accounts.h"
+#include "session.h"
 #include "account_form_window.h"
 
 
@@ -30,8 +31,8 @@ namespace SqlitoSeguro
         Fl_Button* logoutButton;
 
         SqlitoSeguro::accountManager & accountManager;
+        SqlitoSeguro::session& currentSession;
         std::unique_ptr<SqlitoSeguro::AccountFormWindow> newAccount;
-        int uid;
         std::string username;
         static void browser_callback(Fl_Widget* widget, void* data);
         static void addAccountWind(Fl_Widget* widget, void* data);
@@ -40,7 +41,7 @@ namespace SqlitoSeguro
         std::vector<std::string> detailCurrAccount(int uid, int id);
 
     public:
-        accountsWindow(SqlitoSeguro::accountManager& am, int uid, std::string_view username);
+        accountsWindow(SqlitoSeguro::accountManager& am, std::string_view username, SqlitoSeguro::session& cus);
         
         void show();
     };

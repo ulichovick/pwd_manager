@@ -6,27 +6,8 @@
 #include "users.h"
 #include "migracion.h"
 #include "login.h"
+#include "session.h"
 #include <optional>
-
-namespace SqlitoSeguro
-{
-    struct session{
-        std::optional<int> userId;
-        int accId;
-
-        bool isLogged() const
-        {
-            return  userId != 0;
-        }
-
-        void clear()
-        {
-            userId = 0;
-            accId = 0;
-        }
-    };
-} 
-
 
 int main()
 {
@@ -45,7 +26,7 @@ int main()
         SqlitoSeguro::userManager usrs(db1);
         SqlitoSeguro::accountManager accs(db1);
 
-        SqlitoSeguro::loginWindow loginWind(usrs, accs);
+        SqlitoSeguro::loginWindow loginWind(usrs, accs, currSess);
         loginWind.show();
         return Fl::run();
 

@@ -9,7 +9,7 @@
 
 #include "accounts_window.h"
 
-SqlitoSeguro::loginWindow::loginWindow(SqlitoSeguro::userManager& um, SqlitoSeguro::accountManager& am): userManager(um), accountManager(am)
+SqlitoSeguro::loginWindow::loginWindow(SqlitoSeguro::userManager& um, SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus ): userManager(um), accountManager(am), currentSession(cus)
 {
     window = new Fl_Window(300, 200, "Login");
 
@@ -38,8 +38,9 @@ void SqlitoSeguro::loginWindow::handleLogin()
         auto userId = userManager.Authenticate(username, password);
         if (userId)
         {
+            currentSession.userId = *userId;
             window->hide();
-            auto* accWin = new SqlitoSeguro::accountsWindow(accountManager, *userId, username);
+            auto* accWin = new SqlitoSeguro::accountsWindow(accountManager, username, currentSession);
         }
         else
         {

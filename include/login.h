@@ -9,6 +9,7 @@
 #include <FL/Fl_Secret_Input.H>
 #include "users.h"
 #include "accounts.h"
+#include "session.h"
 
 
 namespace SqlitoSeguro
@@ -24,11 +25,12 @@ namespace SqlitoSeguro
 
         SqlitoSeguro::userManager& userManager;
         SqlitoSeguro::accountManager& accountManager;
+        SqlitoSeguro::session& currentSession;
         static void onLogin(Fl_Widget*, void* data);
         void handleLogin();
 
     public:
-        loginWindow(SqlitoSeguro::userManager& um, SqlitoSeguro::accountManager& am);
+        loginWindow(SqlitoSeguro::userManager& um, SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus);
         void show();
     };
     

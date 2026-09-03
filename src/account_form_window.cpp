@@ -7,9 +7,9 @@
 #include <FL/Fl_Multiline_Input.H>
 #include <FL/Fl_Button.H>
 
-SqlitoSeguro::AccountFormWindow::AccountFormWindow(SqlitoSeguro::accountManager& am, int uid):
+SqlitoSeguro::AccountFormWindow::AccountFormWindow(SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus):
     accountManager(am),
-    userId(uid)
+    currentSession(cus)
 {
     window = new Fl_Window(
         500,
@@ -29,14 +29,14 @@ SqlitoSeguro::AccountFormWindow::AccountFormWindow(SqlitoSeguro::accountManager&
     urlInput =
         new Fl_Input(140, 165, 320, 30, "URL:");
 
-    notesInput =
+    /*notesInput =
         new Fl_Multiline_Input(
             140,
             210,
             320,
             100,
             "Notes:"
-        );
+        );*/
 
     saveButton =
         new Fl_Button(
@@ -56,7 +56,7 @@ SqlitoSeguro::AccountFormWindow::AccountFormWindow(SqlitoSeguro::accountManager&
             "Cancel"
         );
 
-    //saveButton->callback(onSave, this);
+    saveButton->callback(onSave, this);
     cancelButton->callback(onCancel, this);
 
     window->end();
@@ -76,4 +76,21 @@ void SqlitoSeguro::AccountFormWindow::onCancel(
         static_cast<AccountFormWindow*>(data);
 
     self->window->hide();
+}
+
+void SqlitoSeguro::AccountFormWindow::onSave(
+    Fl_Widget*,
+    void* data)
+{
+    auto* self = static_cast<AccountFormWindow*>(data);
+    std::string name = self->nameInput->value();
+    std::string username = self->usernameInput->value();
+    std::string password = self->passwordInput->value();
+    std::string url = self->urlInput->value();
+    //std::string notes = self->notesInput->value();
+
+    //std::vector<std::string> currAccount = self->accountManager.addAccount(name, usename, password, );    
+
+    self->window->hide();
+    
 }

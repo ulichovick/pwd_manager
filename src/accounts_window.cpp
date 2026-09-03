@@ -8,10 +8,10 @@
 #include "accounts.h"
 #include "account_form_window.h"
 
-SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, int uid, std::string_view username):
+SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, std::string_view username, SqlitoSeguro::session& cus):
     accountManager(am),
-    uid(uid),
-    username(username)
+    username(username),
+    currentSession(cus)
 {
     std::string usu {"Cuentas de "};
     usu = usu + std::string(username);
@@ -54,7 +54,8 @@ SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, i
     logoutButton =
         new Fl_Button(760,550,120,30,"Salir");
 
-    auto accounts = accountManager.listAccounts(uid);
+    int userId = *currentSession.userId;
+    auto accounts = accountManager.listAccounts(userId);
 
     window->end();
 
@@ -79,6 +80,7 @@ void SqlitoSeguro::accountsWindow::browser_callback(Fl_Widget* widget, void* dat
     auto* self = static_cast<accountsWindow*>(data);
 
     int line = browser->value();
+    int userId = *self->currentSession.userId;
     //int id;
     if (line <= 0)
         return;
@@ -92,7 +94,7 @@ void SqlitoSeguro::accountsWindow::browser_callback(Fl_Widget* widget, void* dat
         reinterpret_cast<intptr_t>(dataPtr)
     );
 
-    std::vector<std::string> currAccount = self->accountManager.detailAccount(self->uid, id);
+    std::vector<std::string> currAccount = self->accountManager.detailAccount(userId, id);
     if (currAccount.size() < 4)
         return;
     self->nameOutput->value(currAccount[1].c_str());
@@ -107,25 +109,9 @@ void SqlitoSeguro::accountsWindow::addAccountWind(Fl_Widget* widget, void* data)
 
     self->newAccount = std::make_unique<SqlitoSeguro::AccountFormWindow>(
         self->accountManager,
-        self->uid
+        self->currentSession
     );
     self->newAccount->show();
-    /*
-    Fl_Window* dlg = new Fl_Window(900, 600, "Add/Edit Account");
-    Fl_Button* close_btn = new Fl_Button(60, 60, 80, 25, "Close");
-    close_btn->callback(close_dialog_cb, dlg);
-
-    dlg->end();
-    win->end();
-
-    dlg->set_modal();
-    dlg->show();
-    while (dlg->shown()) 
-    {
-        Fl::wait();
-    }
-    delete dlg;
-    */
 }
 
 void SqlitoSeguro::accountsWindow::close_dialog_cb(Fl_Widget* w, void* data) {
