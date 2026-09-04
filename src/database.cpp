@@ -103,7 +103,41 @@ void SqlitoSeguro::Database::backupDatabase()
         std::filesystem::perm_options::replace);
 }
 
-/* actualizar para bind_int los ID */
+void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, std::string>& values, std::optional<int> usrid)
+{
+    sqlite3_stmt* stmt = nullptr;
+    int posid {1};
+    int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK)
+    {
+        std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+    }
+
+    sqlite3_bind_int(stmt, posid, usrid.value());
+    
+    if (!values.empty())
+    {
+        for (auto const& [key, value]: values)
+        {
+            sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_TRANSIENT);
+        }
+    }
+    rc = sqlite3_step(stmt);
+    
+    if (rc != SQLITE_DONE)
+    {
+        std::cerr << "ERROR AL EJECUTAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+        sqlite3_finalize(stmt);
+    }
+    else
+    {
+        std::cout << "consulta ejecutada exitosamente! " << "\n";
+        sqlite3_finalize(stmt);
+    }
+    
+}
+
+/* simplificar esta verga */
 void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, std::string>& values, int usrid, int accid, std::optional<int> posid, std::optional<int>posaccid)
 {
     sqlite3_stmt* stmt = nullptr;
@@ -123,43 +157,7 @@ void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, 
     {
         for (auto const& [key, value]: values)
         {
-            sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
-        }
-    }
-    rc = sqlite3_step(stmt);
-    
-    if (rc != SQLITE_DONE)
-    {
-        std::cerr << "ERROR AL EJECUTAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
-        sqlite3_finalize(stmt);
-    }
-    else
-    {
-        std::cout << "consulta ejecutada exitosamente! " << "\n";
-        sqlite3_finalize(stmt);
-    }
-    
-}
-
-void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, std::string>& values, std::optional<int> usrid, std::optional<int> posid)
-{
-    sqlite3_stmt* stmt = nullptr;
-    int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
-    if (rc != SQLITE_OK)
-    {
-        std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
-    }
-
-    if (posid.has_value())
-    {
-        sqlite3_bind_int(stmt, posid.value(), usrid.value());
-    }
-    
-    if (!values.empty())
-    {
-        for (auto const& [key, value]: values)
-        {
-            sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_text(stmt, key, value.c_str(), -1, SQLITE_TRANSIENT);
         }
     }
     rc = sqlite3_step(stmt);

@@ -74,7 +74,7 @@ void SqlitoSeguro::AccountFormWindow::onCancel(
 {
     auto* self =
         static_cast<AccountFormWindow*>(data);
-
+    
     self->window->hide();
 }
 
@@ -83,13 +83,14 @@ void SqlitoSeguro::AccountFormWindow::onSave(
     void* data)
 {
     auto* self = static_cast<AccountFormWindow*>(data);
+    int userId = *self->currentSession.userId;
     std::string name = self->nameInput->value();
     std::string username = self->usernameInput->value();
     std::string password = self->passwordInput->value();
     std::string url = self->urlInput->value();
     //std::string notes = self->notesInput->value();
 
-    //std::vector<std::string> currAccount = self->accountManager.addAccount(name, usename, password, );    
+    self->accountManager.addAccount(name, username, password, userId);    
 
     self->window->hide();
     

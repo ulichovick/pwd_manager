@@ -31,8 +31,8 @@ namespace SqlitoSeguro
             int executeScalar(const std::string& query);
             int setSchemaVersion(int current_ver);
             void backupDatabase();
+            void executeDML(const std::string& query, std::map<int, std::string>& values, std::optional<int> usrid = std::nullopt);
             void executeDML(const std::string& query, std::map<int, std::string>& values,int usrid, int accid, std::optional<int> posid = std::nullopt, std::optional<int>posaccid = std::nullopt);
-            void executeDML(const std::string& query, std::map<int, std::string>& values, std::optional<int> usrid = std::nullopt, std::optional<int> posid = std::nullopt);
             std::map<int, std::vector<std::string>> executeDQL(const std::string& query, std::map<int, std::string>& values);
             std::map<int, std::vector<std::string>> executeDQL(const std::string& query, int usrId, std::optional<int> accId = std::nullopt);
     };
