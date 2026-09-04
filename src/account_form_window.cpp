@@ -6,10 +6,12 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Multiline_Input.H>
 #include <FL/Fl_Button.H>
+#include <utility>
 
-SqlitoSeguro::AccountFormWindow::AccountFormWindow(SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus):
+SqlitoSeguro::AccountFormWindow::AccountFormWindow(SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus, std::function<void()> onSaved):
     accountManager(am),
-    currentSession(cus)
+    currentSession(cus),
+    onAccountSaved(std::move(onSaved)) 
 {
     window = new Fl_Window(
         500,
@@ -74,7 +76,7 @@ void SqlitoSeguro::AccountFormWindow::onCancel(
 {
     auto* self =
         static_cast<AccountFormWindow*>(data);
-    
+
     self->window->hide();
 }
 
@@ -90,7 +92,13 @@ void SqlitoSeguro::AccountFormWindow::onSave(
     std::string url = self->urlInput->value();
     //std::string notes = self->notesInput->value();
 
-    self->accountManager.addAccount(name, username, password, userId);    
+    self->accountManager.addAccount(name, username, password, userId);  
+    
+    if (self->onAccountSaved)
+    {
+    self->onAccountSaved();
+    }
+
 
     self->window->hide();
     

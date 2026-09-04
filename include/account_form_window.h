@@ -7,6 +7,7 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Multiline_Input.H>
 #include <FL/Fl_Button.H>
+#include <functional>
 #include "accounts.h"
 #include "session.h"
 
@@ -32,12 +33,14 @@ namespace SqlitoSeguro
 
         static void onSave(Fl_Widget*, void* data);
         static void onCancel(Fl_Widget*, void* data);
+        std::function<void()> onAccountSaved;
         void handleSave();
         void handleCancel();
 
     public:
-        AccountFormWindow(SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus);
+        AccountFormWindow(SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus, std::function<void()> onSaved);
         void show();
+        
     };
 }
 

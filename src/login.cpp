@@ -41,6 +41,7 @@ void SqlitoSeguro::loginWindow::handleLogin()
             currentSession.userId = *userId;
             window->hide();
             auto* accWin = new SqlitoSeguro::accountsWindow(accountManager, username, currentSession);
+            accWin->refreshAccounts();
         }
         else
         {
@@ -49,9 +50,7 @@ void SqlitoSeguro::loginWindow::handleLogin()
     }
     catch(const std::exception& e)
     {
-        
         statusLabel->label(e.what());
-        
     }
     
 

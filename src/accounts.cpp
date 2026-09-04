@@ -22,11 +22,6 @@ void SqlitoSeguro::accountManager::addAccount(const std::string& service,
         {4, password},
         {5, hora}
     };
-    for (const auto& [key, value] : values)
-    {
-        std::cout << key << " -> " << value << '\n';
-    }
-    
     db.executeDML(query, values, usrId);
 }
 

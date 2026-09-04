@@ -54,16 +54,7 @@ SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, s
     logoutButton =
         new Fl_Button(760,550,120,30,"Salir");
 
-    int userId = *currentSession.userId;
-    auto accounts = accountManager.listAccounts(userId);
-
     window->end();
-
-    for (const auto& [key, values] : accounts)
-    {
-        std::string val = values[0];
-        browser->add(val.c_str(), (void*)(intptr_t)key);
-    }
 
     browser->callback(browser_callback, this);
     addButton->callback(addAccountWind, this);
@@ -109,7 +100,11 @@ void SqlitoSeguro::accountsWindow::addAccountWind(Fl_Widget* widget, void* data)
 
     self->newAccount = std::make_unique<SqlitoSeguro::AccountFormWindow>(
         self->accountManager,
-        self->currentSession
+        self->currentSession,
+        [self]()
+        {
+            self->refreshAccounts();
+        }
     );
     self->newAccount->show();
 }
@@ -117,4 +112,19 @@ void SqlitoSeguro::accountsWindow::addAccountWind(Fl_Widget* widget, void* data)
 void SqlitoSeguro::accountsWindow::close_dialog_cb(Fl_Widget* w, void* data) {
     Fl_Window* dialog = (Fl_Window*)data;
     dialog->hide(); 
+}
+
+void SqlitoSeguro::accountsWindow::refreshAccounts()
+{
+    this->browser->clear();
+    int userId = *this->currentSession.userId;
+    auto accounts = this->accountManager.listAccounts(userId);
+    if (!this->currentSession.isLogged())
+        return;
+
+    for (const auto& [key, values] : accounts)
+    {
+        std::string val = values[0];
+        this->browser->add(val.c_str(), (void*)(intptr_t)key);
+    }
 }
