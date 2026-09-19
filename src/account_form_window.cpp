@@ -8,10 +8,11 @@
 #include <FL/Fl_Button.H>
 #include <utility>
 
-SqlitoSeguro::AccountFormWindow::AccountFormWindow(SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus, std::function<void()> onSaved):
+SqlitoSeguro::AccountFormWindow::AccountFormWindow(SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus, std::function<void()> onSaved, std::optional<int> accountId):
     accountManager(am),
     currentSession(cus),
-    onAccountSaved(std::move(onSaved)) 
+    accountId(accountId),
+    onAccountSaved(std::move(onSaved))
 {
     window = new Fl_Window(
         500,
@@ -57,6 +58,24 @@ SqlitoSeguro::AccountFormWindow::AccountFormWindow(SqlitoSeguro::accountManager&
             30,
             "Cancel"
         );
+        if (accountId.has_value())
+        {
+            int accId = accountId.value_or(0);
+            std::cout << "acc id: " << accId << "\n";
+            std::vector<std::string> currAccount = accountManager.detailAccount(currentSession.userId.value(), accId);
+
+            nameInput->value(currAccount[1].c_str());
+            usernameInput->value(currAccount[2].c_str());
+            passwordInput->value(currAccount[3].c_str());
+            urlInput->value(currAccount[4].c_str());
+
+        }
+        else
+        {
+            std::cout << "no se ha seleccionado cuenta \n";
+        }
+        
+        
 
     saveButton->callback(onSave, this);
     cancelButton->callback(onCancel, this);
@@ -92,7 +111,14 @@ void SqlitoSeguro::AccountFormWindow::onSave(
     std::string url = self->urlInput->value();
     //std::string notes = self->notesInput->value();
 
-    self->accountManager.addAccount(name, username, password, userId);  
+    if (self->accountId.has_value())
+    {
+        self->accountManager.editAccount(name, username, password, userId, self->accountId.value());  
+    }
+    else
+    {
+        self->accountManager.addAccount(name, username, password, userId);  
+    }
     
     if (self->onAccountSaved)
     {

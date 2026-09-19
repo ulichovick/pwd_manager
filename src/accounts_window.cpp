@@ -58,6 +58,8 @@ SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, s
 
     browser->callback(browser_callback, this);
     addButton->callback(addAccountWind, this);
+    editButton->callback(editAccountWind, this);
+
 
     browser->when(FL_WHEN_CHANGED); 
 
@@ -97,16 +99,49 @@ void SqlitoSeguro::accountsWindow::browser_callback(Fl_Widget* widget, void* dat
 void SqlitoSeguro::accountsWindow::addAccountWind(Fl_Widget* widget, void* data)
 {
     auto* self = static_cast<accountsWindow*>(data);
-
     self->newAccount = std::make_unique<SqlitoSeguro::AccountFormWindow>(
         self->accountManager,
         self->currentSession,
         [self]()
         {
             self->refreshAccounts();
-        }
+        },
+        std::nullopt
     );
     self->newAccount->show();
+}
+
+void SqlitoSeguro::accountsWindow::editAccountWind(Fl_Widget* widget, void* data)
+{
+    auto* self = static_cast<accountsWindow*>(data);
+    auto accountId = self->getSelectedAccountId();
+    self->newAccount = std::make_unique<SqlitoSeguro::AccountFormWindow>(
+        self->accountManager,
+        self->currentSession,
+        [self]()
+        {
+            self->refreshAccounts();
+        },
+        accountId
+    );
+    self->newAccount->show();
+}
+
+std::optional<int> SqlitoSeguro::accountsWindow::getSelectedAccountId() const
+{
+    int line = browser->value();
+
+    if (line <= 0)
+        return std::nullopt;
+
+    void* data = browser->data(line);
+
+    if (!data)
+        return std::nullopt;
+
+    return static_cast<int>(
+        reinterpret_cast<intptr_t>(data)
+    );
 }
 
 void SqlitoSeguro::accountsWindow::close_dialog_cb(Fl_Widget* w, void* data) {

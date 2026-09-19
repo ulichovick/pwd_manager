@@ -33,12 +33,13 @@ namespace SqlitoSeguro
 
         static void onSave(Fl_Widget*, void* data);
         static void onCancel(Fl_Widget*, void* data);
+        std::optional<int> accountId;
         std::function<void()> onAccountSaved;
         void handleSave();
         void handleCancel();
 
     public:
-        AccountFormWindow(SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus, std::function<void()> onSaved);
+        AccountFormWindow(SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus, std::function<void()> onSaved, std::optional<int> accountId);
         void show();
         
     };
