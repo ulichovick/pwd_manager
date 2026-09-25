@@ -27,8 +27,8 @@ namespace SqlitoSeguro
         Fl_Button* addButton;
         Fl_Button* editButton;
         Fl_Button* deleteButton;
-        Fl_Button* copyUserButton;
-        Fl_Button* copyPassButton;
+        //Fl_Button* copyUserButton;
+        //Fl_Button* copyPassButton;
         Fl_Button* logoutButton;
 
         SqlitoSeguro::accountManager & accountManager;

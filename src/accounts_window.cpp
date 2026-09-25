@@ -21,21 +21,21 @@ SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, s
 
     browser = new Fl_Hold_Browser(
         10, 40,
-        250, 500,
+        200, 500,
         "Cuentas");
     browser->align(FL_ALIGN_TOP);
 
     nameOutput =
-        new Fl_Output(350,40,500,25,"Servicio:");
+        new Fl_Output(355,40,500,25,"Servicio:");
 
     usernameOutput =
-        new Fl_Output(350,80,500,25,"Usuario:");
+        new Fl_Output(355,80,500,25,"Usuario:");
 
     passwordOutput =
-        new Fl_Output(350,120,500,25,"Contraseña:");
+        new Fl_Output(355,120,500,25,"Contraseña:");
 
     urlOutput =
-        new Fl_Output(350,160,500,25,"URL:");
+        new Fl_Output(355,160,500,25,"última modificación:");
 
     addButton =
         new Fl_Button(10,550,90,30,"Agregar");
@@ -48,11 +48,11 @@ SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, s
         new Fl_Button(210,550,90,30,"Borrar");
     deleteButton->deactivate();
 
-    copyUserButton =
-        new Fl_Button(430,550,110,30,"Copiar Usu");
+    //copyUserButton =
+    //    new Fl_Button(430,550,110,30,"Copiar Usu");
 
-    copyPassButton =
-        new Fl_Button(550,550,110,30,"Copiar Contra");
+    //copyPassButton =
+    //    new Fl_Button(550,550,110,30,"Copiar Contra");
 
     logoutButton =
         new Fl_Button(760,550,120,30,"Salir");

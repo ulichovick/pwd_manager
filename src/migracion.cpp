@@ -12,6 +12,30 @@ void SqlitoSeguro::migrationManager::initialize()
         int newVer {this->setSchemaVersion(1)};
         db.backupDatabase();
     }
+    else if (this->getSchemaVersion() == 1)
+    {
+        db.backupDatabase();
+        if (this->addUrl())
+        {
+            int newVer {this->setSchemaVersion(2)};
+        }
+    }
+    
+}
+
+bool SqlitoSeguro::migrationManager::addUrl()
+{
+    std::string DDLQuery = "ALTER TABLE accounts ADD COLUMN Url TEXT;";
+    int exitCode{};
+    exitCode = db.executeScalar(DDLQuery);
+    if (exitCode != SQLITE_OK) {
+        std::cerr << "Error adding URL column: " << "\n";
+        return false;
+    } 
+    else {
+        std::cout << "Table field successfully updated" << "\n";
+        return true;
+    }
 }
 
 /* cambiar la columna created_at a last_updated */
