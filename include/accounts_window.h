@@ -7,6 +7,7 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Hold_Browser.H>
+#include <FL/fl_ask.H>
 #include "accounts.h"
 #include "session.h"
 #include "account_form_window.h"
@@ -37,6 +38,8 @@ namespace SqlitoSeguro
         static void browser_callback(Fl_Widget* widget, void* data);
         static void addAccountWind(Fl_Widget* widget, void* data);
         static void editAccountWind(Fl_Widget* widget, void* data);
+        static void deleteAccountWind(Fl_Widget* widget, void* data);
+
         std::optional<int> getSelectedAccountId() const;
         static void close_dialog_cb(Fl_Widget* w, void* data);
         

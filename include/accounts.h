@@ -18,7 +18,7 @@ namespace SqlitoSeguro
                             int usrId);
             std::map<int, std::vector<std::string>> listAccounts(int usrId);
             std::vector<std::string> detailAccount(int usrId, int accId);
-            void deleteAccount(int usrId, int accId);
+            int deleteAccount(int usrId, int accId);
             void editAccount(const std::string& service,
                                             const std::string& login,
                                             const std::string& password,

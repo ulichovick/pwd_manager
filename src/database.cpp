@@ -138,13 +138,14 @@ void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, 
 }
 
 /* simplificar esta verga */
-void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, std::string>& values, int usrid, int accid, std::optional<int> posid, std::optional<int>posaccid)
+int SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, std::string>& values, int usrid, int accid, std::optional<int> posid, std::optional<int>posaccid)
 {
     sqlite3_stmt* stmt = nullptr;
     int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK)
     {
         std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+        return 0;
     }
 
     if (posid.has_value() && posaccid.has_value())
@@ -166,11 +167,13 @@ void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, 
     {
         std::cerr << "ERROR AL EJECUTAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
         sqlite3_finalize(stmt);
+        return 0;
     }
     else
     {
         std::cout << "consulta ejecutada exitosamente! " << "\n";
         sqlite3_finalize(stmt);
+        return 1;
     }
     
 }

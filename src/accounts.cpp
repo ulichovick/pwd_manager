@@ -51,12 +51,13 @@ std::vector<std::string> SqlitoSeguro::accountManager::detailAccount(int usrId, 
     return details;
 }
 
-void SqlitoSeguro::accountManager::deleteAccount(int usrId, int accId)
+int SqlitoSeguro::accountManager::deleteAccount(int usrId, int accId)
 {
     std::string query {"DELETE FROM accounts WHERE user_id=? AND id=?;"};
     std::map<int, std::vector<std::string>> res;
     std::map<int, std::string> values {};
-    db.executeDML(query, values, usrId, accId, 1, 2);
+    int status = db.executeDML(query, values, usrId, accId, 1, 2);
+    return status;
 }
 
 /* Temporal hasta tener el GUI */

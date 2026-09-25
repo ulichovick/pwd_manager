@@ -5,6 +5,7 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Hold_Browser.H>
+#include <FL/fl_ask.H>
 #include "accounts.h"
 #include "account_form_window.h"
 
@@ -41,9 +42,11 @@ SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, s
 
     editButton =
         new Fl_Button(110,550,90,30,"Editar");
+    editButton->deactivate();
 
     deleteButton =
         new Fl_Button(210,550,90,30,"Borrar");
+    deleteButton->deactivate();
 
     copyUserButton =
         new Fl_Button(430,550,110,30,"Copiar Usu");
@@ -59,7 +62,7 @@ SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, s
     browser->callback(browser_callback, this);
     addButton->callback(addAccountWind, this);
     editButton->callback(editAccountWind, this);
-
+    deleteButton->callback(deleteAccountWind, this);
 
     browser->when(FL_WHEN_CHANGED); 
 
@@ -76,7 +79,15 @@ void SqlitoSeguro::accountsWindow::browser_callback(Fl_Widget* widget, void* dat
     int userId = *self->currentSession.userId;
     //int id;
     if (line <= 0)
+    {
         return;
+    }
+    else
+    {
+        self->editButton->activate();
+        self->deleteButton->activate();
+    }
+    
 
     auto dataPtr = browser->data(line);
     if (dataPtr == nullptr)
@@ -125,6 +136,30 @@ void SqlitoSeguro::accountsWindow::editAccountWind(Fl_Widget* widget, void* data
         accountId
     );
     self->newAccount->show();
+}
+
+void SqlitoSeguro::accountsWindow::deleteAccountWind(Fl_Widget* widget, void* data)
+{
+    auto* self = static_cast<accountsWindow*>(data);
+    int userId = *self->currentSession.userId;
+    auto Id = self->getSelectedAccountId();
+    int accountId = Id.value();
+
+    int respuesta = fl_choice("¿Estás seguro de que deseas Eliminar la cuenta seleccionada?","No", "Sí", nullptr);
+
+    if (respuesta == 1) { 
+        std::cout << "cuenta " << accountId << " eliminada!" << "\n";
+        int status = self->accountManager.deleteAccount(userId, accountId);
+        if (status == 1)
+        {
+            self->refreshAccounts();
+        }
+    }
+    else
+    {
+        std::cout << "cuenta permanece!" << "\n";
+    }
+    
 }
 
 std::optional<int> SqlitoSeguro::accountsWindow::getSelectedAccountId() const
