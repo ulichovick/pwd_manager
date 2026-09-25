@@ -89,8 +89,9 @@ int SqlitoSeguro::migrationManager::getSchemaVersion()
 int SqlitoSeguro::migrationManager::setSchemaVersion(int current_ver)
 {
     int rc;
+    rc = this->getSchemaVersion();
     std::string query = "PRAGMA user_version="+ std::to_string(current_ver);;
     int res {db.executeScalar(query)};
-    std::cout << "Aplicación actualizada exitosamente de la versión " << res <<  " a la versión "<< this->getSchemaVersion() << "\n";
+    std::cout << "Aplicación actualizada exitosamente de la versión " << rc <<  " a la versión "<< this->getSchemaVersion() << "\n";
     return res;
 }
