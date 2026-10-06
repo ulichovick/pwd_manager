@@ -45,7 +45,7 @@ void SqlitoSeguro::migrationManager::createSchema()
         "id INTEGER PRIMARY KEY,"
         "username TEXT NOT NULL UNIQUE,"
         "password TEXT NOT NULL,"
-        "created_at TEXT NOT NULL"
+        "last_updated TEXT NOT NULL"
         ");" ;
 
     std::string accountsSql = "CREATE TABLE accounts ("
@@ -54,7 +54,8 @@ void SqlitoSeguro::migrationManager::createSchema()
         "service TEXT NOT NULL,"
         "login TEXT NOT NULL,"
         "password TEXT NOT NULL,"
-        "created_at TEXT NOT NULL,"
+        "Url TEXT,"
+        "last_updated TEXT NOT NULL,"
         "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
         ");";
 
