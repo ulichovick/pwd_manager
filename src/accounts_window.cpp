@@ -204,4 +204,6 @@ void SqlitoSeguro::accountsWindow::refreshAccounts()
     this->usernameOutput->value("");
     this->passwordOutput->value("");
     this->urlOutput->value("");
+    editButton->deactivate();
+    deleteButton->deactivate();
 }
