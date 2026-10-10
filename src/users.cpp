@@ -14,7 +14,7 @@ void SqlitoSeguro::userManager::createUser(std::string username, std::string pas
         throw std::invalid_argument("invalid input");
     }
     
-    std::string query {"INSERT INTO USERS (username, password, created_at) VALUES (?, ?, ?);"};
+    std::string query {"INSERT INTO USERS (username, password, last_updated) VALUES (?, ?, ?);"};
     const auto now = std::chrono::system_clock::now();
     auto floorTime {std::chrono::floor<std::chrono::seconds>(now)};
     auto time {std::chrono::zoned_time{std::chrono::current_zone(), floorTime}};

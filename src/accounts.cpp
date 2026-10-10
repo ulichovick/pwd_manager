@@ -9,9 +9,10 @@
 void SqlitoSeguro::accountManager::addAccount(const std::string& service,
                                             const std::string& login,
                                             const std::string& password,
+                                            const std::string& url,
                                             int usrId)
 {
-    std::string query {"INSERT INTO accounts (user_id, service, login, password, created_at) VALUES (?, ?, ?, ?, ?);"};
+    std::string query {"INSERT INTO accounts (user_id, service, login, password, Url, last_updated) VALUES (?, ?, ?, ?, ?, ?);"};
     const auto now = std::chrono::system_clock::now();
     auto floorTime {std::chrono::floor<std::chrono::seconds>(now)};
     auto time {std::chrono::zoned_time{std::chrono::current_zone(), floorTime}};
@@ -20,7 +21,8 @@ void SqlitoSeguro::accountManager::addAccount(const std::string& service,
         {2, service},
         {3, login},
         {4, password},
-        {5, hora}
+        {5, url},
+        {6, hora}
     };
     db.executeDML(query, values, usrId);
 }
@@ -37,7 +39,7 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::accountManager::listAccoun
 
 std::vector<std::string> SqlitoSeguro::accountManager::detailAccount(int usrId, int accId)
 {
-    std::string query {"SELECT id, service, login, password, created_at FROM accounts WHERE user_id=? AND id=?;"};
+    std::string query {"SELECT id, service, login, password, url FROM accounts WHERE user_id=? AND id=?;"};
     std::map<int, std::vector<std::string>> res;
     res = db.executeDQL(query, usrId, accId);
     std::vector<std::string> details;
@@ -64,10 +66,11 @@ int SqlitoSeguro::accountManager::deleteAccount(int usrId, int accId)
 void SqlitoSeguro::accountManager::editAccount(const std::string& service,
                                             const std::string& login,
                                             const std::string& password,
+                                            const std::string& url,
                                             int usrId,
                                             int accId)
 {
-    std::string query {"UPDATE accounts SET service= ?, login = ?, password = ?, created_at = ? WHERE user_id=? AND id=?;"};
+    std::string query {"UPDATE accounts SET service= ?, login = ?, password = ?, Url = ?, last_updated = ? WHERE user_id=? AND id=?;"};
     const auto now = std::chrono::system_clock::now();
     auto floorTime {std::chrono::floor<std::chrono::seconds>(now)};
     auto time {std::chrono::zoned_time{std::chrono::current_zone(), floorTime}};
@@ -76,8 +79,9 @@ void SqlitoSeguro::accountManager::editAccount(const std::string& service,
         {1, service},
         {2, login},
         {3, password},
-        {4, hora},
+        {4, url},
+        {5, hora},
     };
-    db.executeDML(query, values, usrId, accId, 5, 6);
+    db.executeDML(query, values, usrId, accId, 6, 7);
     std::cout << "cuenta editada exitosamente" << "\n";
 }

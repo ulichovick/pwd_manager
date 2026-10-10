@@ -113,7 +113,10 @@ void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, 
         std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
     }
 
-    sqlite3_bind_int(stmt, posid, usrid.value());
+    if (usrid.has_value())
+    {
+        sqlite3_bind_int(stmt, posid, usrid.value());
+    }
     
     if (!values.empty())
     {

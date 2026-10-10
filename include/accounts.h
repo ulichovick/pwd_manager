@@ -14,7 +14,8 @@ namespace SqlitoSeguro
 
             void addAccount(const std::string& service,
                             const std::string& login,
-                            const std::string& password, 
+                            const std::string& password,
+                            const std::string& url, 
                             int usrId);
             std::map<int, std::vector<std::string>> listAccounts(int usrId);
             std::vector<std::string> detailAccount(int usrId, int accId);
@@ -22,6 +23,7 @@ namespace SqlitoSeguro
             void editAccount(const std::string& service,
                                             const std::string& login,
                                             const std::string& password,
+                                            const std::string& url,
                                             int usrId,
                                             int accId);
     };

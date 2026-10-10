@@ -70,15 +70,11 @@ SqlitoSeguro::AccountFormWindow::AccountFormWindow(SqlitoSeguro::accountManager&
             urlInput->value(currAccount[4].c_str());
 
         }
-        else
-        {
-            std::cout << "no se ha seleccionado cuenta \n";
-        }
-        
-        
 
     saveButton->callback(onSave, this);
     cancelButton->callback(onCancel, this);
+
+    saveButton->shortcut(FL_Enter);
 
     window->end();
 }
@@ -113,11 +109,11 @@ void SqlitoSeguro::AccountFormWindow::onSave(
 
     if (self->accountId.has_value())
     {
-        self->accountManager.editAccount(name, username, password, userId, self->accountId.value());  
+        self->accountManager.editAccount(name, username, password, url, userId, self->accountId.value());  
     }
     else
     {
-        self->accountManager.addAccount(name, username, password, userId);  
+        self->accountManager.addAccount(name, username, password, url, userId);  
     }
     
     if (self->onAccountSaved)

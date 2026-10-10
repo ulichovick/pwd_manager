@@ -6,19 +6,27 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Secret_Input.H>
 #include "users.h"
-
+#include "new_user.h"
 #include "accounts_window.h"
 
 SqlitoSeguro::loginWindow::loginWindow(SqlitoSeguro::userManager& um, SqlitoSeguro::accountManager& am, SqlitoSeguro::session& cus ): userManager(um), accountManager(am), currentSession(cus)
 {
-    window = new Fl_Window(300, 200, "Login");
+    window = new Fl_Window(360, 240, "Login");
 
-    usernameInput = new Fl_Input(100, 30, 150, 25, "Username:");
-    passwordInput = new Fl_Secret_Input(100, 70, 150, 25, "Password:");
-    loginButton = new Fl_Button(100, 110, 80, 30, "Login");
-    statusLabel = new Fl_Box(50, 150, 200, 25, "");
+    titleLabel = new Fl_Box(80, 15, 200, 25, "Password Manager");
+    usernameInput = new Fl_Input(120, 55, 190, 25, "Username:");
+    passwordInput = new Fl_Secret_Input(120, 95, 190, 25, "Password:");
+    loginButton = new Fl_Button(75, 140, 90, 30, "Login");
+    createUserButton = new Fl_Button(180, 140, 105, 30, "New User");
+    statusLabel = new Fl_Box(40, 185, 280, 25, "");
+
+    titleLabel->labelfont(FL_BOLD);
+    titleLabel->labelsize(18);
+    statusLabel->align(FL_ALIGN_CENTER);
 
     loginButton->callback(onLogin, this);
+    createUserButton->callback(onCreateUser, this);
+    loginButton->shortcut(FL_Enter);
 
 }
 
@@ -55,6 +63,14 @@ void SqlitoSeguro::loginWindow::handleLogin()
     
 
 }
+
+void SqlitoSeguro::loginWindow::onCreateUser(Fl_Widget*, void* data)
+{
+    auto* self = static_cast<loginWindow*>(data);
+    self->newUserWindow = std::make_unique<SqlitoSeguro::createUserWindow>(self->userManager);
+    self->newUserWindow->show();
+}
+
 void SqlitoSeguro::loginWindow::show()
 {
     window->end();

@@ -35,7 +35,10 @@ SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, s
         new Fl_Output(355,120,500,25,"Contraseña:");
 
     urlOutput =
-        new Fl_Output(355,160,500,25,"última modificación:");
+        new Fl_Output(355,120,500,25,"Contraseña:");
+
+    urlOutput =
+        new Fl_Output(355,160,500,25,"URL:");
 
     addButton =
         new Fl_Button(10,550,90,30,"Agregar");
@@ -197,4 +200,8 @@ void SqlitoSeguro::accountsWindow::refreshAccounts()
         std::string val = values[0];
         this->browser->add(val.c_str(), (void*)(intptr_t)key);
     }
+    this->nameOutput->value("");
+    this->usernameOutput->value("");
+    this->passwordOutput->value("");
+    this->urlOutput->value("");
 }

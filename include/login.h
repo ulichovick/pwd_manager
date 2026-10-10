@@ -10,6 +10,7 @@
 #include "users.h"
 #include "accounts.h"
 #include "session.h"
+#include "new_user.h"
 
 
 namespace SqlitoSeguro
@@ -22,11 +23,16 @@ namespace SqlitoSeguro
         Fl_Secret_Input* passwordInput;
         Fl_Button* loginButton;
         Fl_Box* statusLabel;
+        Fl_Box* titleLabel;
+        Fl_Button* createUserButton;
 
         SqlitoSeguro::userManager& userManager;
         SqlitoSeguro::accountManager& accountManager;
         SqlitoSeguro::session& currentSession;
+        std::unique_ptr<SqlitoSeguro::createUserWindow> newUserWindow;
         static void onLogin(Fl_Widget*, void* data);
+        static void onCreateUser(Fl_Widget*, void* data);
+
         void handleLogin();
 
     public:
