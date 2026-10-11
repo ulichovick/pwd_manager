@@ -7,12 +7,14 @@
 #include <FL/Fl_Hold_Browser.H>
 #include <FL/fl_ask.H>
 #include "accounts.h"
+#include "login.h"
 #include "account_form_window.h"
 
-SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, std::string_view username, SqlitoSeguro::session& cus):
+SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, std::string_view username, SqlitoSeguro::session& cus, SqlitoSeguro::loginWindow& lw):
     accountManager(am),
     username(username),
-    currentSession(cus)
+    currentSession(cus),
+    loginWindow(lw)
 {
     std::string usu {"Cuentas de "};
     usu = usu + std::string(username);
@@ -66,6 +68,8 @@ SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, s
     addButton->callback(addAccountWind, this);
     editButton->callback(editAccountWind, this);
     deleteButton->callback(deleteAccountWind, this);
+
+    logoutButton->callback(logout, this);
 
     browser->when(FL_WHEN_CHANGED); 
 
@@ -206,4 +210,12 @@ void SqlitoSeguro::accountsWindow::refreshAccounts()
     this->urlOutput->value("");
     editButton->deactivate();
     deleteButton->deactivate();
+}
+
+void SqlitoSeguro::accountsWindow::logout(Fl_Widget* widget, void* data)
+{
+    auto* self = static_cast<accountsWindow*>(data);
+    self->currentSession.clear();
+    self->window->hide();
+    self->loginWindow.show();
 }

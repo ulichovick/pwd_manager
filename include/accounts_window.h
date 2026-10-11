@@ -9,6 +9,7 @@
 #include <FL/Fl_Hold_Browser.H>
 #include <FL/fl_ask.H>
 #include "accounts.h"
+#include "login.h"
 #include "session.h"
 #include "account_form_window.h"
 
@@ -30,6 +31,7 @@ namespace SqlitoSeguro
         //Fl_Button* copyUserButton;
         //Fl_Button* copyPassButton;
         Fl_Button* logoutButton;
+        SqlitoSeguro::loginWindow& loginWindow;
 
         SqlitoSeguro::accountManager & accountManager;
         SqlitoSeguro::session& currentSession;
@@ -39,6 +41,7 @@ namespace SqlitoSeguro
         static void addAccountWind(Fl_Widget* widget, void* data);
         static void editAccountWind(Fl_Widget* widget, void* data);
         static void deleteAccountWind(Fl_Widget* widget, void* data);
+        static void logout(Fl_Widget* widget, void* data);
 
         std::optional<int> getSelectedAccountId() const;
         static void close_dialog_cb(Fl_Widget* w, void* data);
@@ -47,7 +50,7 @@ namespace SqlitoSeguro
         std::vector<std::string> detailCurrAccount(int uid, int id);
 
     public:
-        accountsWindow(SqlitoSeguro::accountManager& am, std::string_view username, SqlitoSeguro::session& cus);
+        accountsWindow(SqlitoSeguro::accountManager& am, std::string_view username, SqlitoSeguro::session& cus, SqlitoSeguro::loginWindow& lw);
         void refreshAccounts();
         
         void show();

@@ -27,6 +27,7 @@ SqlitoSeguro::loginWindow::loginWindow(SqlitoSeguro::userManager& um, SqlitoSegu
     loginButton->callback(onLogin, this);
     createUserButton->callback(onCreateUser, this);
     loginButton->shortcut(FL_Enter);
+    window->end();
 
 }
 
@@ -48,7 +49,7 @@ void SqlitoSeguro::loginWindow::handleLogin()
         {
             currentSession.userId = *userId;
             window->hide();
-            auto* accWin = new SqlitoSeguro::accountsWindow(accountManager, username, currentSession);
+            auto* accWin = new SqlitoSeguro::accountsWindow(accountManager, username, currentSession, *this);
             accWin->refreshAccounts();
         }
         else
@@ -73,6 +74,5 @@ void SqlitoSeguro::loginWindow::onCreateUser(Fl_Widget*, void* data)
 
 void SqlitoSeguro::loginWindow::show()
 {
-    window->end();
     window->show();
 }
