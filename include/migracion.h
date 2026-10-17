@@ -9,10 +9,8 @@ namespace SqlitoSeguro
     {
         private:
             Database& db;
-            int test;
         public:
-            migrationManager(Database& database, int t): db(database),
-                                                            test(t){};
+            migrationManager(Database& database): db(database){};
             void initialize();
             bool addUrl();
             void createSchema();

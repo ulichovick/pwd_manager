@@ -100,6 +100,8 @@ void SqlitoSeguro::AccountFormWindow::onSave(
     void* data)
 {
     auto* self = static_cast<AccountFormWindow*>(data);
+    if (!self->currentSession.isLogged())
+        return;
     int userId = *self->currentSession.userId;
     std::string name = self->nameInput->value();
     std::string username = self->usernameInput->value();

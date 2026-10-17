@@ -6,7 +6,6 @@ namespace SqlitoSeguro
 {
     struct session{
         std::optional<int> userId;
-        int accId;
 
         bool isLogged() const
         {
@@ -16,7 +15,6 @@ namespace SqlitoSeguro
         void clear()
         {
             userId.reset();
-            accId = 0;
         }
     };
 }

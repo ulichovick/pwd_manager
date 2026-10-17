@@ -18,7 +18,7 @@ int main()
         std::filesystem::path directorio {std::filesystem::path(home) / ".local" / "share" / "pwd_manager" / "vault.db"};
         SqlitoSeguro::Database db1(directorio);
         
-        SqlitoSeguro::migrationManager migrador(db1,2);
+        SqlitoSeguro::migrationManager migrador(db1);
         migrador.initialize();
 
         SqlitoSeguro::session currSess;

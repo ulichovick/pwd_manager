@@ -37,9 +37,6 @@ SqlitoSeguro::accountsWindow::accountsWindow(SqlitoSeguro::accountManager& am, s
         new Fl_Output(355,120,500,25,"Contraseña:");
 
     urlOutput =
-        new Fl_Output(355,120,500,25,"Contraseña:");
-
-    urlOutput =
         new Fl_Output(355,160,500,25,"URL:");
 
     addButton =
@@ -106,7 +103,7 @@ void SqlitoSeguro::accountsWindow::browser_callback(Fl_Widget* widget, void* dat
     );
 
     std::vector<std::string> currAccount = self->accountManager.detailAccount(userId, id);
-    if (currAccount.size() < 4)
+    if (currAccount.size() < 5)
         return;
     self->nameOutput->value(currAccount[1].c_str());
     self->usernameOutput->value(currAccount[2].c_str());
@@ -150,6 +147,8 @@ void SqlitoSeguro::accountsWindow::deleteAccountWind(Fl_Widget* widget, void* da
     auto* self = static_cast<accountsWindow*>(data);
     int userId = *self->currentSession.userId;
     auto Id = self->getSelectedAccountId();
+    if (!Id)
+        return;
     int accountId = Id.value();
 
     int respuesta = fl_choice("¿Estás seguro de que deseas Eliminar la cuenta seleccionada?","No", "Sí", nullptr);
@@ -193,11 +192,13 @@ void SqlitoSeguro::accountsWindow::close_dialog_cb(Fl_Widget* w, void* data) {
 
 void SqlitoSeguro::accountsWindow::refreshAccounts()
 {
+    
+    if (!this->currentSession.isLogged())
+        return;
+
     this->browser->clear();
     int userId = *this->currentSession.userId;
     auto accounts = this->accountManager.listAccounts(userId);
-    if (!this->currentSession.isLogged())
-        return;
 
     for (const auto& [key, values] : accounts)
     {

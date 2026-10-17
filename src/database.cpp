@@ -111,6 +111,7 @@ void SqlitoSeguro::Database::executeDML(const std::string& query, std::map<int, 
     if (rc != SQLITE_OK)
     {
         std::cerr << "ERROR AL PREPARAR LA CONSULTA! " << sqlite3_errmsg(db) << "\n";
+        return;
     }
 
     if (usrid.has_value())
@@ -253,11 +254,11 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(const
     }
 
     int id;
-    std::vector<std::string> row;
     int cols {sqlite3_column_count(stmt)};
     std::map<int, std::vector<std::string>> resultados;
     while (sqlite3_step(stmt) == SQLITE_ROW)
     {
+        std::vector<std::string> row;
         id = sqlite3_column_int(stmt, 0);
         if (cols > 2)
         {
@@ -274,7 +275,8 @@ std::map<int, std::vector<std::string>> SqlitoSeguro::Database::executeDQL(const
         {
             const unsigned char* cell = sqlite3_column_text(stmt, 1);
             std::string strCell = reinterpret_cast<const char*>(cell);
-            std::vector<std::string> row{strCell};
+            //std::vector<std::string> row{strCell};
+            row.push_back(strCell);
             resultados.insert({id, row});
         }
         
